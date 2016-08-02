@@ -178,7 +178,7 @@ public class SplashActivity extends AppCompatActivity {
      * @created at 2016/8/2 9:24
      */
     public void startActivity() {
-        Intent intent = new Intent(SplashActivity.this, Mainactivity.class);
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(intent);
         //Activity之间跳转的动画效果
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

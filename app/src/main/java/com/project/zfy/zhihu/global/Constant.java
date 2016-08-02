@@ -22,5 +22,27 @@ public class Constant {
      * @created at 2016/8/2 8:45
      */
     public static final String START = "start-image/1080*1776";
+    
+    /**
+    *主题日报列表URL
+    *@author zfy
+    *@created at 2016/8/2 12:47
+    */
+    public static final String THEMES ="themes";
 
+    public static final int TOPIC = 131;
+    
+    /**
+    *最新消息的URL
+    *@author zfy
+    *@created at 2016/8/2 15:27
+    */
+    public static final String LATESTNEWS = "news/latest";
+
+    /**
+    *最新消息的最大值
+    *@author zfy
+    *@created at 2016/8/2 15:34
+    */
+    public static final int LATEST_COLUMN = Integer.MAX_VALUE;
 }

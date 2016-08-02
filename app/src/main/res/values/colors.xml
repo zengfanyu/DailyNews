@@ -3,4 +3,16 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <!--侧边栏上方的背景色-->
+    <color name="light_menu_header">@android:color/holo_blue_dark</color>
+    <!--侧边栏上主页的背景颜色-->
+    <color name="light_menu_index_background">#FFF0F0F0</color>
+    <!--白天模式也夜晚模式下ToolBar的背景色-->
+    <color name="light_toolbar">@android:color/holo_blue_dark</color>
+    <color name="dark_toolbar">@android:color/black</color>
+
+    <color name="light_news_item">#FFF0F0F0</color>
+    <color name="light_news_topic">#ff666666</color>
+
+    <color name="clicked_tv_textcolor">@android:color/darker_gray</color>
 </resources>
