@@ -45,4 +45,11 @@ public class Constant {
     *@created at 2016/8/2 15:34
     */
     public static final int LATEST_COLUMN = Integer.MAX_VALUE;
+
+    /**
+    *过往消息的url
+    *@author zfy
+    *@created at 2016/8/3 11:12
+    */
+    public static final String DEFORE = "news/before/";
 }

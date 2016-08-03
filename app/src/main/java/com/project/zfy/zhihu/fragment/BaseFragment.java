@@ -42,7 +42,11 @@ public abstract class BaseFragment extends Fragment {
         initData();
     }
 
-
+    /**
+    *初始化数据的方法,不是必须实现的
+    *@author zfy
+    *@created at 2016/8/2 23:04
+    */
     public void initData() {
 
     }

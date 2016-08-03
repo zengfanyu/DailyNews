@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.BinaryHttpResponseHandler;
@@ -15,6 +14,8 @@ import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.utils.HttpUtils;
 import com.project.zfy.zhihu.utils.IOUtils;
+import com.project.zfy.zhihu.utils.ToastUtils;
+import com.project.zfy.zhihu.utils.UIUtils;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -124,7 +125,7 @@ public class SplashActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    Toast.makeText(SplashActivity.this, "没有网络连接!", Toast.LENGTH_LONG).show();
+                    ToastUtils.ToastUtils(UIUtils.getContext(), "没有网络连接!!!");
                     startActivity();
                 }
 

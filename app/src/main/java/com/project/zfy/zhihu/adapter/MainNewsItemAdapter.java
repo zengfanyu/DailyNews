@@ -95,13 +95,19 @@ public class MainNewsItemAdapter extends BaseAdapter {
         holder.ll_root.setBackgroundColor(UIUtils.getColor(R.color.light_news_item));
         holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
 
+
+        //判断是否是头item
         StoriesEntity entity = mEntities.get(position);
         if (entity.getType() == Constant.TOPIC) {
+            //是头item,那么只显示一个tpic的TextView,其余的都隐藏掉
             holder.fl_container.setBackgroundColor(Color.TRANSPARENT);
-            holder.rl_root.setVisibility(View.GONE);
+            holder.tv_title.setVisibility(View.GONE);
+            holder.iv_title.setVisibility(View.GONE);
+            holder.tv_topic.setVisibility(View.VISIBLE);
             holder.tv_topic.setText(entity.getTitle());
 
         } else {
+            //如果不是,现实普通的布局
             holder.fl_container.setBackgroundResource(R.drawable.item_background_selector_light);
             holder.tv_topic.setVisibility(View.GONE);
             holder.tv_title.setVisibility(View.VISIBLE);
