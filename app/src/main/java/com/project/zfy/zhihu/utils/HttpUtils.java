@@ -55,7 +55,12 @@ public class HttpUtils {
         if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            //若果没有网络连接,此时返回值NetworkInfo 为空
             NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+
+            LogUtils.d("网络状况:" + mNetworkInfo);
+
             if (mNetworkInfo != null) {
                 return mNetworkInfo.isAvailable();
             }

@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.db.CacheDbHelper;
 import com.project.zfy.zhihu.fragment.MainFragment;
+import com.project.zfy.zhihu.utils.ToastUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 
 /**
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout fl_content;
     private DrawerLayout mDrawerLayout;
     private SwipeRefreshLayout srl_swipe;
-    private String mCurentId;
+    private String mCurrentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
         loadLatest();
     }
 
-    private void loadLatest() {
+    public void loadLatest() {
         getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left)
                 .replace(R.id.fl_content, new MainFragment(), "latest")
                 .commit();
-        mCurentId = "latest";
+        mCurrentId = "latest";
 
     }
 
@@ -94,12 +95,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshFragment() {
-        if (mCurentId.equals("latest")) {
+        if (mCurrentId.equals("latest")) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
                     .replace(R.id.fl_content, new MainFragment(), "latest")
                     .commit();
+        }else{
+            ToastUtils.ToastUtils(UIUtils.getContext(),"今天就这么多了,不好意思~");
         }
 
 
@@ -157,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void closeMenu() {
+    public void closeMenu() {
         mDrawerLayout.closeDrawers();
     }
 
@@ -165,6 +168,11 @@ public class MainActivity extends AppCompatActivity {
         srl_swipe.setEnabled(enable);
 
 
+    }
+
+    public void setCurrentId(String id) {
+
+        mCurrentId = id;
 
     }
 }

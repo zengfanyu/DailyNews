@@ -22,34 +22,47 @@ public class Constant {
      * @created at 2016/8/2 8:45
      */
     public static final String START = "start-image/1080*1776";
-    
-    /**
-    *主题日报列表URL
-    *@author zfy
-    *@created at 2016/8/2 12:47
-    */
-    public static final String THEMES ="themes";
 
-    public static final int TOPIC = 131;
-    
     /**
-    *最新消息的URL
-    *@author zfy
-    *@created at 2016/8/2 15:27
-    */
+     * 主题日报列表URL
+     *
+     * @author zfy
+     * @created at 2016/8/2 12:47
+     */
+    public static final String THEMES = "themes";
+
+    /**
+     * 自定义的一种标志,服务器返回的数据全部type=0,
+     * 我们可以手动在数据结合的最前端添加一条数据,并且并type=131,
+     * 从而区分出是topic标题item还是普通的item
+     * 类似于ListView中两种类型不同的item
+     *
+     * @author zfy
+     * @created at 2016/8/3 13:26
+     */
+    public static final int TOPIC = 131;
+
+    /**
+     * 最新消息的URL
+     *
+     * @author zfy
+     * @created at 2016/8/2 15:27
+     */
     public static final String LATESTNEWS = "news/latest";
 
     /**
-    *最新消息的最大值
-    *@author zfy
-    *@created at 2016/8/2 15:34
-    */
+     * 最新消息的最大值
+     *
+     * @author zfy
+     * @created at 2016/8/2 15:34
+     */
     public static final int LATEST_COLUMN = Integer.MAX_VALUE;
 
     /**
-    *过往消息的url
-    *@author zfy
-    *@created at 2016/8/3 11:12
-    */
+     * 过往消息的url
+     *
+     * @author zfy
+     * @created at 2016/8/3 11:12
+     */
     public static final String DEFORE = "news/before/";
 }

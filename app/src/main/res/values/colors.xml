@@ -15,4 +15,7 @@
     <color name="light_news_topic">#ff666666</color>
 
     <color name="clicked_tv_textcolor">@android:color/darker_gray</color>
+
+    <!--白天模式下 menu中listview的item的字体颜色-->
+    <color name="light_menu_listview_textcolcr">#FF000000</color>
 </resources>
