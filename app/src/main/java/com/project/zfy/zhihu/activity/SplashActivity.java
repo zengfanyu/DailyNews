@@ -111,7 +111,9 @@ public class SplashActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onFailure(int statusCode, Header[] headers, byte[] binaryData, Throwable error) {
-
+                                        ToastUtils.ToastUtils(getApplicationContext(), "网络开小差了...");
+                                        //跳转到MainActivity
+                                        startActivity();
                                     }
                                 });
                             } catch (JSONException e) {
