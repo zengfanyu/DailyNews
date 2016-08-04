@@ -77,7 +77,7 @@ public class MenuFragment extends BaseFragment {
                 getFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left)
-                        .replace(R.id.fl_content, new NewsFragment(mItems.get(position).getTitle()))
+                        .replace(R.id.fl_content, new NewsFragment(mItems.get(position).getTitle(), mItems.get(position).getId()))
                         .commit();
 
                 //更新当前显示界面的标记值

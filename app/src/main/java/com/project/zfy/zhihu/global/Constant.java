@@ -65,4 +65,17 @@ public class Constant {
      * @created at 2016/8/3 11:12
      */
     public static final String DEFORE = "news/before/";
+    
+    /**
+    *主题日报内容
+    *@author zfy
+    *@created at 2016/8/4 9:05
+    */
+    public static final String THEMENEWS = "theme/";
+    /**
+    *数据库使用的一个定值
+    *@author zfy
+    *@created at 2016/8/4 9:06
+    */
+    public static final int BASE_COLUMN = 100000000;
 }
