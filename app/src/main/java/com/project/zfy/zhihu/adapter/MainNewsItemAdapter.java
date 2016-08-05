@@ -4,16 +4,21 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.zfy.zhihu.R;
+import com.project.zfy.zhihu.activity.MainActivity;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
@@ -30,6 +35,9 @@ public class MainNewsItemAdapter extends BaseAdapter {
     private List<StoriesEntity> mEntities;
     private ImageLoader mImageLoader;
     private DisplayImageOptions mOptions;
+    private Animation mAnimation;
+    private ListView lv_news;
+    private Context mContext;
 
 
     /**
@@ -45,7 +53,47 @@ public class MainNewsItemAdapter extends BaseAdapter {
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
+        mAnimation = AnimationUtils.loadAnimation(context, R.anim.bottom_in_anim);
+
+
     }
+
+    private boolean isScrollDown;
+    private int mFirstPosition, mFirstTop;
+    AbsListView.OnScrollListener mOnScrollListener = new AbsListView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            View firstChild = view.getChildAt(0);
+            if (firstChild == null) return;
+            int top = firstChild.getTop();
+
+
+            /**
+             * firstVisibleItem > mFirstPosition表示向下滑动一整个Item
+             * mFirstTop > top表示在当前这个item中滑动
+             */
+            isScrollDown = firstVisibleItem > mFirstPosition || mFirstTop > top;
+            mFirstTop = top;
+            mFirstPosition = firstVisibleItem;
+
+
+            //listView存在,并且有item项
+            if (lv_news != null && lv_news.getChildCount() > 0) {
+                //只有当可以看到的第一个item编号是0,并且第一个可以看到的item完全可见!!!!!!!!!!! swipe才可以刷新
+                boolean enable = (firstVisibleItem == 0) && (view.getChildAt(firstVisibleItem).getTop() == 0);
+
+                ((MainActivity) mContext).setSwipeRefreshLayoutEnable(enable);
+
+
+            }
+        }
+    };
+
 
     //刷新添加数据的方法
     public void addList(List<StoriesEntity> items) {
@@ -84,6 +132,19 @@ public class MainNewsItemAdapter extends BaseAdapter {
         } else {
             holder = (viewHolder) convertView.getTag();
         }
+
+
+        //清除当前显示区域中所有item的动画，保证只有最后一个item添加动画
+        for (int i = 0; i < lv_news.getChildCount(); i++) {
+            View view = lv_news.getChildAt(i);
+            view.clearAnimation();
+        }
+
+        //如果现在是向下滑，我们才给convertView加上动画！
+        if (isScrollDown) {
+            convertView.startAnimation(mAnimation);
+        }
+
 
         String readSeq = SharedPreferenceUtils.getString(UIUtils.getContext(), "read", "");
         if (readSeq.contains(mEntities.get(position).getId() + "")) {

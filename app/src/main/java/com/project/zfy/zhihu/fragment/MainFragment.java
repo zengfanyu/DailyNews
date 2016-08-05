@@ -3,30 +3,42 @@ package com.project.zfy.zhihu.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
+import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.activity.LatestContentActivity;
 import com.project.zfy.zhihu.activity.MainActivity;
-import com.project.zfy.zhihu.adapter.MainNewsItemAdapter;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.Before;
 import com.project.zfy.zhihu.moudle.Latest;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.HttpUtils;
+import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.Kanner;
 
 import org.apache.http.Header;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,6 +51,7 @@ public class MainFragment extends BaseFragment {
     private MainNewsItemAdapter mAdapter;
     private boolean isLoading = false;  //是否正在加载数据的标记
     private Latest mLatest;
+
     /**
      * 从Json数据中解析出来的日期是当天的日期.
      * 这个日期贴在before的url后面,就可以查新到前一天的消息
@@ -50,6 +63,9 @@ public class MainFragment extends BaseFragment {
      */
     private String mDate;
     private Before before;
+
+    private boolean isScrollDown;
+    private int mFirstPosition, mFirstTop;
 
     @Override
     public View initView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
@@ -95,9 +111,6 @@ public class MainFragment extends BaseFragment {
         //给ListView设置头布局
         lv_news.addHeaderView(header);
 
-        mAdapter = new MainNewsItemAdapter(UIUtils.getContext());
-
-        lv_news.setAdapter(mAdapter);
 
         //监听listView 的滑动事件
         lv_news.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -108,18 +121,26 @@ public class MainFragment extends BaseFragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
                 //listView存在,并且有item项
                 if (lv_news != null && lv_news.getChildCount() > 0) {
+
+                    View firstChild = view.getChildAt(0);
+                    if (firstChild == null) return;
+                    int top = firstChild.getTop();
+
+
+                    /**
+                     * firstVisibleItem > mFirstPosition表示向下滑动一整个Item
+                     * mFirstTop > top表示在当前这个item中滑动
+                     */
+                    isScrollDown = firstVisibleItem > mFirstPosition || mFirstTop > top;
+                    mFirstTop = top;
+                    mFirstPosition = firstVisibleItem;
+
+
                     //只有当可以看到的第一个item编号是0,并且第一个可以看到的item完全可见!!!!!!!!!!! swipe才可以刷新
                     boolean enable = (firstVisibleItem == 0) && (view.getChildAt(firstVisibleItem).getTop() == 0);
-                    /*LogUtils.d("enable-->" + enable +
-                            ",firstVisibleItem-->" + firstVisibleItem +
-                            ",top-->" + view.getChildAt(firstVisibleItem).getTop() +
-                            ",visibleItemCount-->" + visibleItemCount +
-                            ",totalItemCount-->" + totalItemCount);
-                    LogUtils.i("firstVisibleItem-->" + firstVisibleItem +
-                            ",visibleItemCount-->" + visibleItemCount +
-                            ",totalItemCount-->" + totalItemCount);*/
 
                     ((MainActivity) mActivity).setSwipeRefreshLayoutEnable(enable);
 
@@ -133,8 +154,14 @@ public class MainFragment extends BaseFragment {
 
                 }
 
+
             }
         });
+
+        mAdapter = new MainNewsItemAdapter();
+
+
+        lv_news.setAdapter(mAdapter);
 
 
         return view;
@@ -332,5 +359,129 @@ public class MainFragment extends BaseFragment {
             }
         });
 
+    }
+
+
+    class MainNewsItemAdapter extends BaseAdapter {
+        private List<StoriesEntity> mEntities;
+        private ImageLoader mImageLoader;
+        private DisplayImageOptions mOptions;
+        private Animation mAnimation;
+
+
+        /**
+         * 构造方法
+         *
+         * @author zfy
+         * @created at 2016/8/2 14:13
+         */
+        public MainNewsItemAdapter() {
+            this.mEntities = new ArrayList<StoriesEntity>();
+            mImageLoader = ImageLoader.getInstance();
+            mOptions = new DisplayImageOptions.Builder()
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .build();
+            mAnimation = AnimationUtils.loadAnimation(mActivity, R.anim.bottom_in_anim);
+
+
+        }
+
+
+        //刷新添加数据的方法
+        public void addList(List<StoriesEntity> items) {
+            this.mEntities.addAll(items);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return mEntities.size();
+        }
+
+        @Override
+        public StoriesEntity getItem(int position) {
+            return mEntities.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            viewHolder holder;
+            if (convertView == null) {
+                holder = new viewHolder();
+                convertView = View.inflate(UIUtils.getContext(), R.layout.main_list_news_item, null);
+                holder.iv_title = (ImageView) convertView.findViewById(R.id.iv_title);
+                holder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
+                holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
+                holder.ll_root = (LinearLayout) convertView.findViewById(R.id.ll_root);
+                holder.fl_container = (FrameLayout) convertView.findViewById(R.id.fl_container);
+                holder.rl_root = (RelativeLayout) convertView.findViewById(R.id.rl_root);
+                convertView.setTag(holder);
+            } else {
+                holder = (viewHolder) convertView.getTag();
+            }
+
+
+            //清除当前显示区域中所有item的动画，保证只有最后一个item添加动画
+            for (int i = 0; i < lv_news.getChildCount(); i++) {
+                View view = lv_news.getChildAt(i);
+                view.clearAnimation();
+            }
+
+            //如果现在是向下滑，我们才给convertView加上动画！
+            if (isScrollDown) {
+                convertView.startAnimation(mAnimation);
+            }
+
+
+            String readSeq = SharedPreferenceUtils.getString(UIUtils.getContext(), "read", "");
+            if (readSeq.contains(mEntities.get(position).getId() + "")) {
+                holder.tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+            } else {
+                holder.tv_title.setTextColor(UIUtils.getColor(R.color.light_news_topic));
+            }
+
+            holder.ll_root.setBackgroundColor(UIUtils.getColor(R.color.light_news_item));
+            holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
+
+
+            //判断是否是头item
+            StoriesEntity entity = mEntities.get(position);
+            if (entity.getType() == Constant.TOPIC) {
+                //是头item,那么只显示一个tpic的TextView,其余的都隐藏掉
+                holder.fl_container.setBackgroundColor(Color.TRANSPARENT);
+                holder.tv_title.setVisibility(View.GONE);
+                holder.iv_title.setVisibility(View.GONE);
+                holder.tv_topic.setVisibility(View.VISIBLE);
+                holder.tv_topic.setText(entity.getTitle());
+
+            } else {
+                //如果不是,现实普通的布局
+                holder.fl_container.setBackgroundResource(R.drawable.item_background_selector_light);
+                holder.tv_topic.setVisibility(View.GONE);
+                holder.tv_title.setVisibility(View.VISIBLE);
+                holder.iv_title.setVisibility(View.VISIBLE);
+                holder.tv_title.setText(entity.getTitle());
+                mImageLoader.displayImage(entity.getImages().get(0), holder.iv_title, mOptions);
+            }
+
+            return convertView;
+        }
+
+
+        class viewHolder {
+            TextView tv_topic;
+            TextView tv_title;
+            ImageView iv_title;
+            LinearLayout ll_root;
+            FrameLayout fl_container;
+            RelativeLayout rl_root;
+
+        }
     }
 }
