@@ -1,5 +1,6 @@
 package com.project.zfy.zhihu.fragment;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.project.zfy.zhihu.R;
+import com.project.zfy.zhihu.activity.LatestContentActivity;
 import com.project.zfy.zhihu.activity.MainActivity;
 import com.project.zfy.zhihu.adapter.MainNewsItemAdapter;
 import com.project.zfy.zhihu.global.Constant;
@@ -69,12 +71,23 @@ public class MainFragment extends BaseFragment {
                 v.getLocationOnScreen(startingLocation);
                 startingLocation[0] += v.getWidth() / 2;
                 StoriesEntity storiesEntity = new StoriesEntity();
+
+                //将id和title传给新闻详情activity
+                //id用于获取新闻详情的数据 title用于在tooabar上面显示
+
                 storiesEntity.setId(entity.getId());
                 storiesEntity.setTitle(entity.getTitle());
-                /*
-                * 此处跳转
-                * */
 
+                Intent intent = new Intent(mActivity, LatestContentActivity.class);
+                intent.putExtra(Constant.START_LOCATION, startingLocation);
+                intent.putExtra("entity", storiesEntity);
+                intent.putExtra("isLight", ((MainActivity) mActivity).isLight());
+                startActivity(intent);
+
+
+//                ((MainActivity) mActivity).startActivity(intent);
+
+                //取消Activity之间的跳转效果
                 mActivity.overridePendingTransition(0, 0);
             }
         });
@@ -181,12 +194,13 @@ public class MainFragment extends BaseFragment {
 
 
     /**
-    *解析从服务器请求到的更多数据
-    *@author zfy
-    *@return void
-    *@param responseString 服务器返回的JSON数据
-    *@created at 2016/8/3 12:33
-    */
+     * 解析从服务器请求到的更多数据
+     *
+     * @param responseString 服务器返回的JSON数据
+     * @return void
+     * @author zfy
+     * @created at 2016/8/3 12:33
+     */
     private void parseBeforeJSONData(String responseString) {
         Gson gson = new Gson();
         before = gson.fromJson(responseString, Before.class);

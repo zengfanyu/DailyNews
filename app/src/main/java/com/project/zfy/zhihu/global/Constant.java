@@ -78,4 +78,20 @@ public class Constant {
     *@created at 2016/8/4 9:06
     */
     public static final int BASE_COLUMN = 100000000;
+
+
+    /**
+    *
+    *@author zfy
+    *@created at 2016/8/5 8:36
+    */
+    public static final String START_LOCATION = "start_location";
+
+    /**
+    *最新新闻详情页面的url 后面拼接上ｉｄ
+    *@author zfy
+    *@created at 2016/8/5 10:16
+    */
+    public static final String CONTENT = "news/";
+
 }

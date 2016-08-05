@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.db.CacheDbHelper;
 import com.project.zfy.zhihu.fragment.MainFragment;
+import com.project.zfy.zhihu.utils.HttpUtils;
 import com.project.zfy.zhihu.utils.ToastUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 
@@ -78,9 +79,21 @@ public class MainActivity extends AppCompatActivity {
         srl_swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                //刷新之后,由右向左将fragment做一个平移,给用户一个刷新过了的体验
-                refreshFragment();
-                srl_swipe.setRefreshing(false);
+
+                if (HttpUtils.isNetworkConnected(getApplicationContext())) {
+
+                    //刷新之后,由右向左将fragment做一个平移,给用户一个刷新过了的体验
+                    refreshFragment();
+                    srl_swipe.setRefreshing(false);
+
+
+
+                } else {
+                    ToastUtils.ToastUtils(getApplicationContext(), "网络不给力呀！");
+                    srl_swipe.setRefreshing(false);
+                }
+
+
             }
         });
 
@@ -101,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
                     .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
                     .replace(R.id.fl_content, new MainFragment(), "latest")
                     .commit();
-        }else{
-            ToastUtils.ToastUtils(UIUtils.getContext(),"今天就这么多了,不好意思~");
+        } else {
+            ToastUtils.ToastUtils(UIUtils.getContext(), "今天就这么多了,不好意思~");
         }
 
 
