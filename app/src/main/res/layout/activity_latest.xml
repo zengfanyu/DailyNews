@@ -12,7 +12,7 @@
     android:fitsSystemWindows="true">
 
     <com.project.zfy.zhihu.view.RevealBackgroundView
-        android:id="@+id/revealBackgroundView"
+        android:id="@+id/rbv_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -81,7 +81,7 @@
             -->
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/tb_bar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"/>
@@ -98,7 +98,7 @@
         需要设置app:layout_behavior属性。所以在此处需要给ＷｅｂＶｉｅｗ套一个NestedScrollView-->
 
         <WebView
-            android:id="@+id/webview"
+            android:id="@+id/wv_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
