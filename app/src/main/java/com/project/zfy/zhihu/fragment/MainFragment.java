@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -64,7 +65,19 @@ public class MainFragment extends BaseFragment {
     private String mDate;
     private Before before;
 
+    /**
+     * 标记当前listView的滑动方向
+     *
+     * @author zfy
+     * @created at 2016/8/5 16:55
+     */
     private boolean isScrollDown;
+    /**
+     * 用于记录ListView中第一个可见item的位置，和其top值
+     *
+     * @author zfy
+     * @created at 2016/8/5 16:56
+     */
     private int mFirstPosition, mFirstTop;
 
     @Override
@@ -80,17 +93,17 @@ public class MainFragment extends BaseFragment {
 
         kanner = (Kanner) header.findViewById(R.id.kanner);
 
+        //给轮播条设置监听
         kanner.setOnItemClickListener(new Kanner.OnItemClickListener() {
             @Override
             public void click(View v, Latest.TopStoriesEntity entity) {
                 int[] startingLocation = new int[2];
                 v.getLocationOnScreen(startingLocation);
                 startingLocation[0] += v.getWidth() / 2;
-                StoriesEntity storiesEntity = new StoriesEntity();
 
                 //将id和title传给新闻详情activity
                 //id用于获取新闻详情的数据 title用于在tooabar上面显示
-
+                StoriesEntity storiesEntity = new StoriesEntity();
                 storiesEntity.setId(entity.getId());
                 storiesEntity.setTitle(entity.getTitle());
 
@@ -99,9 +112,6 @@ public class MainFragment extends BaseFragment {
                 intent.putExtra("entity", storiesEntity);
                 intent.putExtra("isLight", ((MainActivity) mActivity).isLight());
                 startActivity(intent);
-
-
-//                ((MainActivity) mActivity).startActivity(intent);
 
                 //取消Activity之间的跳转效果
                 mActivity.overridePendingTransition(0, 0);
@@ -125,11 +135,10 @@ public class MainFragment extends BaseFragment {
                 //listView存在,并且有item项
                 if (lv_news != null && lv_news.getChildCount() > 0) {
 
+                    //判断是否正在向下滑动
                     View firstChild = view.getChildAt(0);
                     if (firstChild == null) return;
                     int top = firstChild.getTop();
-
-
                     /**
                      * firstVisibleItem > mFirstPosition表示向下滑动一整个Item
                      * mFirstTop > top表示在当前这个item中滑动
@@ -139,6 +148,7 @@ public class MainFragment extends BaseFragment {
                     mFirstPosition = firstVisibleItem;
 
 
+                    //解决listView个swipeRefreshLayout的滑动冲突
                     //只有当可以看到的第一个item编号是0,并且第一个可以看到的item完全可见!!!!!!!!!!! swipe才可以刷新
                     boolean enable = (firstVisibleItem == 0) && (view.getChildAt(firstVisibleItem).getTop() == 0);
 
@@ -154,6 +164,30 @@ public class MainFragment extends BaseFragment {
 
                 }
 
+
+            }
+        });
+
+
+        //对listView 的item做监听
+        lv_news.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int[] startingLoacation = new int[2];
+                view.getLocationOnScreen(startingLoacation);
+                startingLoacation[0] += view.getWidth() / 2;
+
+                //parent is listView ,through listview get adapter then get item bean
+                StoriesEntity entity = (StoriesEntity) parent.getAdapter().getItem(position);
+                Intent intent = new Intent(mActivity, LatestContentActivity.class);
+                intent.putExtra(Constant.START_LOCATION, startingLoacation);
+                intent.putExtra("entity", entity);
+
+                TextView tv_title = (TextView) view.findViewById(R.id.tv_title);
+                tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+
+                startActivity(intent);
+                mActivity.overridePendingTransition(0, 0);
 
             }
         });
@@ -427,7 +461,12 @@ public class MainFragment extends BaseFragment {
             }
 
 
-            //清除当前显示区域中所有item的动画，保证只有最后一个item添加动画
+            /*
+            * 在每一个item在添加动画前，都把当前显示区域内所有item动画给取消，
+            * 然后给当前convertView添加上动画；当listview滚动到最后一个Item的时候，
+            * 自然，同样也是先把所有动画取消，然后给他自己添加上动画，
+            * 所以这样看起来就好像是只给他自己添加了动画，之前滚动的item是没有动画的。
+            * */
             for (int i = 0; i < lv_news.getChildCount(); i++) {
                 View view = lv_news.getChildAt(i);
                 view.clearAnimation();

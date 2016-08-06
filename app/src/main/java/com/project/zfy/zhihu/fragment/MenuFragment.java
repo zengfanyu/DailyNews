@@ -76,7 +76,7 @@ public class MenuFragment extends BaseFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 getFragmentManager()
                         .beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left)
+                        .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
                         .replace(R.id.fl_content, new NewsFragment(mItems.get(position).getTitle(), mItems.get(position).getId()))
                         .commit();
 

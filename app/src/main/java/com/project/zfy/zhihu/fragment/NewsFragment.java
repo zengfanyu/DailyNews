@@ -1,6 +1,7 @@
 package com.project.zfy.zhihu.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -19,10 +20,13 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.activity.MainActivity;
+import com.project.zfy.zhihu.activity.NewsContentActivity;
 import com.project.zfy.zhihu.adapter.ThemeNewsItemAdapter;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.News;
+import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.HttpUtils;
+import com.project.zfy.zhihu.utils.UIUtils;
 
 import org.apache.http.Header;
 
@@ -95,10 +99,26 @@ public class NewsFragment extends BaseFragment {
             }
         });
 
-        //对ListView的点击事件做监听
+        //对ListView的点击事件做监听 跳转到某一主题日报下面的某一具体的新闻的详情页
         lv_news.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int[] startingLocation = new int[2];
+                view.getLocationOnScreen(startingLocation);
+                startingLocation[0] += view.getWidth() / 2;
+
+
+                StoriesEntity entity = (StoriesEntity) parent.getAdapter().getItem(position);
+                Intent intent = new Intent(mActivity, NewsContentActivity.class);
+                intent.putExtra(Constant.START_LOCATION, startingLocation);
+                intent.putExtra("entity", entity);
+
+                TextView tv_title = (TextView) view.findViewById(R.id.tv_title);
+                tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+
+                startActivity(intent);
+                mActivity.overridePendingTransition(0, 0);
+
 
             }
         });
