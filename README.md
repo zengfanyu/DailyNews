@@ -6,7 +6,7 @@
 > Screen
 
 
-!(http://img.blog.csdn.net/20160804103913542)
+![](http://img.blog.csdn.net/20160804103913542)
 
 
 > **API**
