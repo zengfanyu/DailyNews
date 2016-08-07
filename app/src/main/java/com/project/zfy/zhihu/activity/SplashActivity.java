@@ -26,6 +26,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import cn.sharesdk.framework.ShareSDK;
+
 public class SplashActivity extends AppCompatActivity {
 
     private ImageView iv_start;
@@ -34,6 +36,9 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //在入口activity出初始化SharedSDK
+        ShareSDK.initSDK(this,"15d2bf5fa8b3f");
 
 
         setContentView(R.layout.activity_splash);

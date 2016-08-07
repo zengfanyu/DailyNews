@@ -48,6 +48,7 @@ public class NewsContentActivity extends BaseContentActivity {
     public void stateChangeShowView(int state) {
         if (RevealBackgroundView.STATE_FINISHED == state) {
             coordinatorLayout.setVisibility(View.VISIBLE);
+            fab_float.setVisibility(View.VISIBLE);
         }
 
     }

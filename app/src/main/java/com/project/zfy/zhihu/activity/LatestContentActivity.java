@@ -39,6 +39,7 @@ public class LatestContentActivity extends BaseContentActivity {
         iv_header = (ImageView) findViewById(R.id.iv_header);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
 
+
         app_bar_layout.setVisibility(View.INVISIBLE);
 
         mCollapsingToolbarLayout.setTitle(mEntity.getTitle());
@@ -47,7 +48,6 @@ public class LatestContentActivity extends BaseContentActivity {
 
 
     }
-
 
 
     @Override
@@ -72,10 +72,14 @@ public class LatestContentActivity extends BaseContentActivity {
     public void stateChangeShowView(int state) {
         if (RevealBackgroundView.STATE_FINISHED == state) {
             app_bar_layout.setVisibility(View.VISIBLE);
+            fab_float.setVisibility(View.VISIBLE);
             setStatusBarColor(Color.TRANSPARENT);
         }
 
     }
+
+
+
 
 
 }

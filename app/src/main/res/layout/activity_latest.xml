@@ -26,6 +26,9 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
 
+
+
+
         <!--
             app:contentScrim　
             ＴｏｏｌＢａｒ被折叠到顶部固定时，的背景
@@ -85,7 +88,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"/>
+
+
         </android.support.design.widget.CollapsingToolbarLayout>
+
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
@@ -93,6 +99,7 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
 
         <!--CoordinatorLayout包含的子视图中带有滚动属性的View
         需要设置app:layout_behavior属性。所以在此处需要给ＷｅｂＶｉｅｗ套一个NestedScrollView-->
@@ -103,6 +110,29 @@
             android:layout_height="match_parent">
 
         </WebView>
+
+
     </android.support.v4.widget.NestedScrollView>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_float"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_anchor="@id/wv_view"
+        app:layout_anchorGravity="bottom|right|end"
+        android:src="@android:drawable/ic_menu_share"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorAccent"
+        android:clickable="true"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:layout_behavior="com.project.zfy.zhihu.view.ScrollAwareFABBehaviorDefault"
+        app:pressedTranslationZ="12dp"/>
+
+
+
+
+
 </android.support.design.widget.CoordinatorLayout>
 

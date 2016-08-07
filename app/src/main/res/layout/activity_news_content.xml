@@ -4,6 +4,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_float"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_anchorGravity="bottom|right|end"
+        android:src="@android:drawable/ic_menu_share"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorAccent"
+        android:clickable="true"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"/>
+
+
     <com.project.zfy.zhihu.view.RevealBackgroundView
         android:id="@+id/rbv_view"
         android:layout_width="match_parent"
@@ -40,6 +56,10 @@
                 android:layout_height="match_parent">
 
             </WebView>
+
+
         </android.support.v4.widget.NestedScrollView>
+
+
     </android.support.design.widget.CoordinatorLayout>
 </RelativeLayout>
