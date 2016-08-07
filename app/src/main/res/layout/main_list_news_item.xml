@@ -49,6 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@id/iv_title"
+                android:textColor="@android:color/black"
                 android:padding="5dp"
                 android:text="如何看待当下这种越来越普遍的“沉默”人格？"
                 android:textSize="18sp" />

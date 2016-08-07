@@ -79,6 +79,7 @@ public class MainFragment extends BaseFragment {
      * @created at 2016/8/5 16:56
      */
     private int mFirstPosition, mFirstTop;
+    private TextView mTv_title;
 
     @Override
     public View initView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
@@ -183,8 +184,17 @@ public class MainFragment extends BaseFragment {
                 intent.putExtra(Constant.START_LOCATION, startingLoacation);
                 intent.putExtra("entity", entity);
 
-                TextView tv_title = (TextView) view.findViewById(R.id.tv_title);
-                tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+
+                String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
+                //只有不包含当前点击的对象的ID的时候,我们才追加,避免同一个id的重复
+                if (!readIds.contains(((StoriesEntity) parent.getAdapter().getItem(position)).getId() + "")) {
+                    readIds = readIds + ((StoriesEntity) parent.getAdapter().getItem(position)).getId() + ",";
+                    SharedPreferenceUtils.putString(mActivity, Constant.READ_IDS, readIds);
+                }
+
+                //当对象被点击之后,将字体颜色变为灰色
+                TextView mTv_title = (TextView) view.findViewById(R.id.tv_title);
+                mTv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
 
                 startActivity(intent);
                 mActivity.overridePendingTransition(0, 0);
@@ -478,12 +488,19 @@ public class MainFragment extends BaseFragment {
             }
 
 
-            String readSeq = SharedPreferenceUtils.getString(UIUtils.getContext(), "read", "");
+            /*String readSeq = SharedPreferenceUtils.getString(UIUtils.getContext(), "read", "");
             if (readSeq.contains(mEntities.get(position).getId() + "")) {
                 holder.tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
             } else {
                 holder.tv_title.setTextColor(UIUtils.getColor(R.color.light_news_topic));
+            }*/
+            String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
+            if (readIds.contains(getItem(position).getId() + "")) {
+                holder.tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+            } else {
+                holder.tv_title.setTextColor(UIUtils.getColor(R.color.light_news_topic));
             }
+
 
             holder.ll_root.setBackgroundColor(UIUtils.getColor(R.color.light_news_item));
             holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));

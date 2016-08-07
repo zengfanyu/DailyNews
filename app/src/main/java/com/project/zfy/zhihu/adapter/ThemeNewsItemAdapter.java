@@ -10,7 +10,9 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.zfy.zhihu.R;
+import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
+import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 
 import java.util.List;
@@ -67,8 +69,16 @@ public class ThemeNewsItemAdapter extends BaseAdapter {
         }
         StoriesEntity entity = getItem(position);
 
-        holder.tv_title.setTextColor(UIUtils.getColor(android.R.color.black));
         holder.tv_title.setText(entity.getTitle());
+
+        //根据SP中的标记,来判断此条新闻是否点击过,从而来改变title的颜色
+        String readIds = SharedPreferenceUtils.getString(mContext, Constant.READ_IDS, "");
+        if (readIds.contains(getItem(position).getId() + "")) {
+            holder.tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+        } else {
+            holder.tv_title.setTextColor(UIUtils.getColor(R.color.light_news_topic));
+        }
+
         if (entity.getImages() != null) {
             holder.iv_title.setVisibility(View.VISIBLE);
             mImageLoader.displayImage(entity.getImages().get(0), holder.iv_title, mOptions);

@@ -94,4 +94,10 @@ public class Constant {
     */
     public static final String CONTENT = "news/";
 
+    /**
+    *已经点击过的新闻的id
+    *@author zfy
+    *@created at 2016/8/7 10:20
+    */
+    public static final String READ_IDS = "read_ids";
 }

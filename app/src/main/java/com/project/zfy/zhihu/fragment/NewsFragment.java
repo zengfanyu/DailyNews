@@ -26,6 +26,7 @@ import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.News;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.HttpUtils;
+import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 
 import org.apache.http.Header;
@@ -112,6 +113,14 @@ public class NewsFragment extends BaseFragment {
                 Intent intent = new Intent(mActivity, NewsContentActivity.class);
                 intent.putExtra(Constant.START_LOCATION, startingLocation);
                 intent.putExtra("entity", entity);
+
+
+                String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
+                //只有不包含当前点击的对象的ID的时候,我们才追加,避免同一个id的重复
+                if (!readIds.contains(((StoriesEntity) parent.getAdapter().getItem(position)).getId() + "")) {
+                    readIds = readIds + ((StoriesEntity) parent.getAdapter().getItem(position)).getId() + ",";
+                    SharedPreferenceUtils.putString(mActivity, Constant.READ_IDS, readIds);
+                }
 
                 TextView tv_title = (TextView) view.findViewById(R.id.tv_title);
                 tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));

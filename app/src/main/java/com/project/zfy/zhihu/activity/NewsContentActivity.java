@@ -12,7 +12,7 @@ import com.project.zfy.zhihu.view.RevealBackgroundView;
  * 某一主题日报的具体某一条item的新闻详情页面
  * Created by zfy on 2016/8/6.
  */
-public class NewsContentActivity extends BaseContentActivity{
+public class NewsContentActivity extends BaseContentActivity {
     private CoordinatorLayout coordinatorLayout;
     private Content content;
 
@@ -22,17 +22,12 @@ public class NewsContentActivity extends BaseContentActivity{
     }
 
 
-
-
     @Override
     public void initView() {
         super.initView();
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.cl_layout);
         //一跳转到activity的时候,要隐藏toolbar
         coordinatorLayout.setVisibility(View.INVISIBLE);
-
-
-
 
 
     }
@@ -47,7 +42,6 @@ public class NewsContentActivity extends BaseContentActivity{
         mWebView.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
 
     }
-
 
 
     @Override

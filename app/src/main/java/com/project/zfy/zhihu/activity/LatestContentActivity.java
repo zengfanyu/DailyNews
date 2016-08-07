@@ -45,6 +45,7 @@ public class LatestContentActivity extends BaseContentActivity {
         mCollapsingToolbarLayout.setContentScrimColor(UIUtils.getColor(R.color.light_toolbar));
         mCollapsingToolbarLayout.setStatusBarScrimColor(UIUtils.getColor(R.color.light_toolbar));
 
+
     }
 
 
