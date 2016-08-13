@@ -17,7 +17,7 @@
         android:layout_marginBottom="25dp"
         android:padding="10dp"
         android:text="标题"
-        android:textColor="@android:color/white"
+        android:textColor="#FAFFF0"
         android:textSize="20sp" />
 
 </FrameLayout>

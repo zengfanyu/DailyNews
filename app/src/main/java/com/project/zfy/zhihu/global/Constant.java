@@ -100,4 +100,11 @@ public class Constant {
     *@created at 2016/8/7 10:20
     */
     public static final String READ_IDS = "read_ids";
+
+    /**
+    *标记是否时第一次进入APP
+    *@author zfy
+    *@created at 2016/8/13 18:12
+    */
+    public static final String IS_FIRST_ENTER = "is_first_enter";
 }

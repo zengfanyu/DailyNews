@@ -14,6 +14,7 @@ import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.utils.HttpUtils;
 import com.project.zfy.zhihu.utils.IOUtils;
+import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
 import com.project.zfy.zhihu.utils.ToastUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 
@@ -38,7 +39,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //在入口activity出初始化SharedSDK
-        ShareSDK.initSDK(this,"15d2bf5fa8b3f");
+        ShareSDK.initSDK(this, "15d2bf5fa8b3f");
 
 
         setContentView(R.layout.activity_splash);
@@ -110,15 +111,19 @@ public class SplashActivity extends AppCompatActivity {
                                     public void onSuccess(int statusCode, Header[] headers, byte[] binaryData) {
                                         //将图片存入缓存文件夹中
                                         saveImage(imageFile, binaryData);
+
+                                        boolean isFirstEnter = SharedPreferenceUtils.getBoolean(SplashActivity.this, Constant.IS_FIRST_ENTER, true);
                                         //跳转到MainActivity
-                                        startActivity();
+                                        startActivity(isFirstEnter);
                                     }
 
                                     @Override
                                     public void onFailure(int statusCode, Header[] headers, byte[] binaryData, Throwable error) {
                                         ToastUtils.ToastUtils(getApplicationContext(), "网络开小差了...");
+
+                                        boolean isFirstEnter = SharedPreferenceUtils.getBoolean(SplashActivity.this, Constant.IS_FIRST_ENTER, true);
                                         //跳转到MainActivity
-                                        startActivity();
+                                        startActivity(isFirstEnter);
                                     }
                                 });
                             } catch (JSONException e) {
@@ -133,7 +138,10 @@ public class SplashActivity extends AppCompatActivity {
                     });
                 } else {
                     ToastUtils.ToastUtils(UIUtils.getContext(), "没有网络连接!!!");
-                    startActivity();
+
+                    boolean isFirstEnter = SharedPreferenceUtils.getBoolean(SplashActivity.this, Constant.IS_FIRST_ENTER, true);
+                    //跳转到MainActivity
+                    startActivity(isFirstEnter);
                 }
 
             }
@@ -185,8 +193,15 @@ public class SplashActivity extends AppCompatActivity {
      * @author zfy
      * @created at 2016/8/2 9:24
      */
-    public void startActivity() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+    public void startActivity(boolean isFirstEnter) {
+
+
+        Intent intent;
+        if (isFirstEnter) {
+            intent = new Intent(SplashActivity.this, GuideActivity.class);
+        } else {
+            intent = new Intent(SplashActivity.this, MainActivity.class);
+        }
         startActivity(intent);
         //Activity之间跳转的动画效果
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

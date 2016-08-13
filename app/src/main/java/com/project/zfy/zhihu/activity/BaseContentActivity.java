@@ -22,7 +22,6 @@ import com.project.zfy.zhihu.db.WebCacheDbHelper;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.HttpUtils;
-import com.project.zfy.zhihu.utils.LogUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.RevealBackgroundView;
 
@@ -79,6 +78,8 @@ public abstract class BaseContentActivity extends AppCompatActivity implements R
             mBackgroundView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
+                    //Callback method to be invoked when the view tree is about to be drawn.
+                    // At this point, all views in the tree have been measured and given a frame.
                     mBackgroundView.getViewTreeObserver().removeOnPreDrawListener(this);
                     mBackgroundView.startFromLocation(mStartingLocation);
                     return true;
@@ -111,9 +112,7 @@ public abstract class BaseContentActivity extends AppCompatActivity implements R
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     //请求数据成功，缓存到数据库
                     SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//                    responseString = responseString.replaceAll("'", "''");
-
-                    LogUtils.d("responseString--->" + responseString);
+                    responseString = responseString.replaceAll("'", "''");
                     db.execSQL("replace into Cache(newsId,json) values(" + mEntity.getId() + ",'" + responseString + "')");
                     db.close();
                     parseJsonData(responseString);
