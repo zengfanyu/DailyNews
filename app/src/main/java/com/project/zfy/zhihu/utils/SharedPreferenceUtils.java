@@ -3,11 +3,13 @@ package com.project.zfy.zhihu.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.io.Serializable;
+
 /**
  * 封装SP工具类
  * Created by zfy on 2016/8/2.
  */
-public class SharedPreferenceUtils {
+public class SharedPreferenceUtils implements Serializable{
 
     private static final String SHARE_PREFS_NAME = "config";
     private static SharedPreferences sSharedPreferences;

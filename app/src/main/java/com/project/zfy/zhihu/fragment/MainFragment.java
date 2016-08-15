@@ -27,6 +27,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.activity.LatestContentActivity;
+import com.project.zfy.zhihu.activity.LatestContentPagerActivity;
 import com.project.zfy.zhihu.activity.MainActivity;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.Before;
@@ -39,6 +40,7 @@ import com.project.zfy.zhihu.view.Kanner;
 
 import org.apache.http.Header;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +54,7 @@ public class MainFragment extends BaseFragment {
     private MainNewsItemAdapter mAdapter;
     private boolean isLoading = false;  //是否正在加载数据的标记
     private Latest mLatest;
+
 
     /**
      * 从Json数据中解析出来的日期是当天的日期.
@@ -80,6 +83,53 @@ public class MainFragment extends BaseFragment {
      */
     private int mFirstPosition, mFirstTop;
     private TextView mTv_title;
+
+    private int mCurrentPos;
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        //对listView 的item做监听
+        lv_news.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int[] startingLoacation = new int[2];
+                view.getLocationOnScreen(startingLoacation);
+                startingLoacation[0] += view.getWidth() / 2;
+
+                //parent is listView ,through listview get adapter then get item bean
+                StoriesEntity entity = (StoriesEntity) parent.getAdapter().getItem(position);
+
+//                Intent intent = new Intent(mActivity, LatestContentActivity.class);
+                Intent intent = new Intent(mActivity, LatestContentPagerActivity.class);
+                intent.putExtra(Constant.START_LOCATION, startingLoacation);
+
+
+                intent.putExtra("entities", (Serializable) mEntities);
+                mCurrentPos = position;
+
+                intent.putExtra("mCurrentPos", mCurrentPos);
+
+                String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
+                //只有不包含当前点击的对象的ID的时候,我们才追加,避免同一个id的重复
+                if (!readIds.contains(((StoriesEntity) parent.getAdapter().getItem(position)).getId() + "")) {
+                    readIds = readIds + ((StoriesEntity) parent.getAdapter().getItem(position)).getId() + ",";
+                    SharedPreferenceUtils.putString(mActivity, Constant.READ_IDS, readIds);
+                }
+
+                //当对象被点击之后,将字体颜色变为灰色
+                TextView mTv_title = (TextView) view.findViewById(R.id.tv_title);
+                mTv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+
+                startActivity(intent);
+                mActivity.overridePendingTransition(0, 0);
+
+            }
+        });
+
+    }
 
     @Override
     public View initView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
@@ -170,38 +220,6 @@ public class MainFragment extends BaseFragment {
         });
 
 
-        //对listView 的item做监听
-        lv_news.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int[] startingLoacation = new int[2];
-                view.getLocationOnScreen(startingLoacation);
-                startingLoacation[0] += view.getWidth() / 2;
-
-                //parent is listView ,through listview get adapter then get item bean
-                StoriesEntity entity = (StoriesEntity) parent.getAdapter().getItem(position);
-                Intent intent = new Intent(mActivity, LatestContentActivity.class);
-                intent.putExtra(Constant.START_LOCATION, startingLoacation);
-                intent.putExtra("entity", entity);
-
-
-                String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
-                //只有不包含当前点击的对象的ID的时候,我们才追加,避免同一个id的重复
-                if (!readIds.contains(((StoriesEntity) parent.getAdapter().getItem(position)).getId() + "")) {
-                    readIds = readIds + ((StoriesEntity) parent.getAdapter().getItem(position)).getId() + ",";
-                    SharedPreferenceUtils.putString(mActivity, Constant.READ_IDS, readIds);
-                }
-
-                //当对象被点击之后,将字体颜色变为灰色
-                TextView mTv_title = (TextView) view.findViewById(R.id.tv_title);
-                mTv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
-
-                startActivity(intent);
-                mActivity.overridePendingTransition(0, 0);
-
-            }
-        });
-
         mAdapter = new MainNewsItemAdapter();
 
 
@@ -210,6 +228,7 @@ public class MainFragment extends BaseFragment {
 
         return view;
     }
+
 
     /**
      * 加载更多数据的方法
@@ -286,10 +305,10 @@ public class MainFragment extends BaseFragment {
             @Override
             public void run() {
                 List<StoriesEntity> storiesEntities = before.getStories();
-                StoriesEntity topic = new StoriesEntity();
+               /* StoriesEntity topic = new StoriesEntity();
                 topic.setType(Constant.TOPIC);
                 topic.setTitle(legalDate(mDate));
-                storiesEntities.add(0, topic);
+                storiesEntities.add(0, topic);*/
                 mAdapter.addList(storiesEntities);
                 isLoading = false;
 
@@ -392,10 +411,10 @@ public class MainFragment extends BaseFragment {
                 //手动添加新闻的头标题,用TOPIC区分开,在此处设定一个StoriesEntity的type==TOPIC,
                 //然后添加到第0个位置,在MainNewsItemAdapter
                 List<StoriesEntity> storiesEntities = mLatest.getStories();
-                StoriesEntity topic = new StoriesEntity();
+               /* StoriesEntity topic = new StoriesEntity();
                 topic.setType(Constant.TOPIC);
                 topic.setTitle("今日热闻");
-                storiesEntities.add(0, topic);
+                storiesEntities.add(0, topic);*/
                 //在addList()方法中已经刷新过了.!!
                 mAdapter.addList(storiesEntities);
                 isLoading = false;
@@ -405,9 +424,11 @@ public class MainFragment extends BaseFragment {
 
     }
 
+    private List<StoriesEntity> mEntities;
 
-    class MainNewsItemAdapter extends BaseAdapter {
-        private List<StoriesEntity> mEntities;
+
+    public class MainNewsItemAdapter extends BaseAdapter implements Serializable {
+
         private ImageLoader mImageLoader;
         private DisplayImageOptions mOptions;
         private Animation mAnimation;
@@ -420,7 +441,8 @@ public class MainFragment extends BaseFragment {
          * @created at 2016/8/2 14:13
          */
         public MainNewsItemAdapter() {
-            this.mEntities = new ArrayList<StoriesEntity>();
+
+            mEntities = new ArrayList<StoriesEntity>();
             mImageLoader = ImageLoader.getInstance();
             mOptions = new DisplayImageOptions.Builder()
                     .cacheInMemory(true)
@@ -434,7 +456,7 @@ public class MainFragment extends BaseFragment {
 
         //刷新添加数据的方法
         public void addList(List<StoriesEntity> items) {
-            this.mEntities.addAll(items);
+            mEntities.addAll(items);
             notifyDataSetChanged();
         }
 
@@ -530,7 +552,7 @@ public class MainFragment extends BaseFragment {
         }
 
 
-        class viewHolder {
+        class viewHolder implements Serializable {
             TextView tv_topic;
             TextView tv_title;
             ImageView iv_title;

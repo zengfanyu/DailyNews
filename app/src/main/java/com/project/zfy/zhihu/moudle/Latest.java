@@ -1,12 +1,13 @@
 package com.project.zfy.zhihu.moudle;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * $desc
  * Created by zfy on 2016/8/2.
  */
-public class Latest {
+public class Latest implements Serializable {
 
     /**
      * top_stories : [{"id":7048089,"title":"发生类似天津爆炸事故时，该如何自救？","ga_prefix":"081309","image":"http://pic4.zhimg.com/494dafbd64c141fd023d4e58b3343fcb.jpg","type":0},{"id":7047383,"title":"每卖一辆车亏 4000 美元，这事儿跟「iPhone 成本仅几百元」挺像","ga_prefix":"081307","image":"http://pic1.zhimg.com/40e0f21292df0e8512385f191e71ad14.jpg","type":0},{"id":7047795,"title":"央视说要干预男男性行为，具体是怎么干预法？","ga_prefix":"081310","image":"http://pic4.zhimg.com/89f0bca7d4ccf70bd747f3675adc18eb.jpg","type":0},{"id":7047071,"title":"美国人最爱买的车第一名是它，第二名是它，第三名，还是它\u2026\u2026","ga_prefix":"081307","image":"http://pic1.zhimg.com/9c00c482251e82fa8e0b957fa9ceb334.jpg","type":0},{"id":7046751,"title":"今晚的修破斯哒是 · 小李子","ga_prefix":"081219","image":"http://pic3.zhimg.com/bc5f63634d9c9832da8593ac64ebb7d6.jpg","type":0}]
@@ -41,7 +42,7 @@ public class Latest {
         return date;
     }
 
-    public static class TopStoriesEntity {
+    public static class TopStoriesEntity implements Serializable {
         /**
          {
          "ga_prefix": "080208",

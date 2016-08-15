@@ -117,6 +117,9 @@ public class LatestContentFragment extends BaseFragment {
         iv_header = (ImageView) view.findViewById(R.id.iv_header);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar_layout);
 
+//        app_bar_layout.setVisibility(View.INVISIBLE);
+
+
 
         return view;
     }
@@ -126,7 +129,6 @@ public class LatestContentFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        app_bar_layout.setVisibility(View.INVISIBLE);
 
     }
 

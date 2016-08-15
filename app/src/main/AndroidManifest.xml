@@ -61,6 +61,10 @@
 
         </activity>
 
+        <activity android:name=".activity.LatestContentPagerActivity">
+
+        </activity>
+
         <activity
             android:name="com.mob.tools.MobUIShell"
             android:configChanges="keyboardHidden|orientation|screenSize"

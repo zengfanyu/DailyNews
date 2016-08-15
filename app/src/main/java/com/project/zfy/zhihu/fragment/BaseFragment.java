@@ -42,6 +42,7 @@ public abstract class BaseFragment extends Fragment {
         initData();
     }
 
+
     /**
     *初始化数据的方法,不是必须实现的
     *@author zfy
