@@ -1,85 +1,127 @@
 package com.project.zfy.zhihu.activity;
 
 
+import android.annotation.TargetApi;
 import android.graphics.Color;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 
-import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.project.zfy.zhihu.R;
-import com.project.zfy.zhihu.moudle.Content;
+import com.project.zfy.zhihu.fragment.LatestContentFragment;
+import com.project.zfy.zhihu.global.Constant;
+import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.RevealBackgroundView;
 
 /**
- * 最新新闻的内容详情页
+ * 最新新闻的activity
  * Created by zfy on 2016/8/5.
  */
-public class LatestContentActivity extends BaseContentActivity {
-    private AppBarLayout app_bar_layout;
-    private ImageView iv_header;
-    private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private Content mContent;
+public class LatestContentActivity extends AppCompatActivity implements RevealBackgroundView.OnStateChangeListener {
 
-    @Override
-    public int loadContentView() {
-        return R.layout.activity_latest;
-    }
+    private LatestContentFragment mLatestContentFragment;
 
+    private int[] mStartingLocation;
 
-    @Override
-    public void initView() {
-        super.initView();
+    private StoriesEntity mEntity;
 
-        app_bar_layout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        iv_header = (ImageView) findViewById(R.id.iv_header);
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar_layout);
-
-
-        app_bar_layout.setVisibility(View.INVISIBLE);
-
-        mCollapsingToolbarLayout.setTitle(mEntity.getTitle());
-        mCollapsingToolbarLayout.setContentScrimColor(UIUtils.getColor(R.color.light_toolbar));
-        mCollapsingToolbarLayout.setStatusBarScrimColor(UIUtils.getColor(R.color.light_toolbar));
-
-
-    }
+    public RevealBackgroundView mBackgroundView;
 
 
     @Override
-    public void parseJsonData(String responseString) {
-        Gson gson = new Gson();
-        mContent = gson.fromJson(responseString, Content.class);
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .cacheOnDisk(true)
-                .cacheInMemory(true)
-                .build();
-        imageLoader.displayImage(mContent.getImage(), iv_header, options);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/css/news.css\" type=\"text/css\">";
-        String html = "<html><head>" + css + "</head><body>" + mContent.getBody() + "</body></html>";
-        html = html.replace("<div class=\"img-place-holder\">", "");
-        mWebView.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+        setContentView(R.layout.activity_base_content);
+
+
+        mBackgroundView = (RevealBackgroundView) findViewById(R.id.rbv_view);
+
+        mStartingLocation = getIntent().getIntArrayExtra(Constant.START_LOCATION);
+
+        mEntity = (StoriesEntity) getIntent().getSerializableExtra("entity");
+
+        FragmentManager fm = getSupportFragmentManager();
+
+        mLatestContentFragment = (LatestContentFragment) fm.findFragmentById(R.id.id_fragment_container);
+
+        if (mLatestContentFragment == null) {
+
+            mLatestContentFragment = LatestContentFragment.newInstance(mEntity);
+            fm.beginTransaction().add(R.id.id_fragment_container, mLatestContentFragment).commit();
+
+        }
+
+        initAnimation(savedInstanceState);
+
 
     }
 
-    @Override
-    public void stateChangeShowView(int state) {
-        if (RevealBackgroundView.STATE_FINISHED == state) {
-            app_bar_layout.setVisibility(View.VISIBLE);
-            fab_float.setVisibility(View.VISIBLE);
-            setStatusBarColor(Color.TRANSPARENT);
+    public void initAnimation(Bundle bundle) {
+        setupRevealBackground(bundle);
+        setStatusBarColor(UIUtils.getColor(R.color.light_toolbar));
+
+    }
+
+    public void setupRevealBackground(Bundle bundle) {
+        mBackgroundView.setOnStateChangeListener(this);
+        if (bundle == null) {
+
+            //view树完成测量并且分配空间而绘制过程还没有开始的时候播放动画
+            mBackgroundView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    //Callback method to be invoked when the view tree is about to be drawn.
+                    // At this point, all views in the tree have been measured and given a frame.
+                    mBackgroundView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    mBackgroundView.startFromLocation(mStartingLocation);
+                    return true;
+                }
+            });
+
+
+        } else {
+            mBackgroundView.setToFinishedFrame();
         }
 
     }
 
+    @TargetApi(21)
+    public void setStatusBarColor(int statusBarColor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // If both system bars are black, we can remove these from our layout,
+            // removing or shrinking the SurfaceFlinger overlay required for our views.
+            Window window = this.getWindow();
+            if (statusBarColor == Color.BLACK && window.getNavigationBarColor() == Color.BLACK) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            } else {
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            }
+            window.setStatusBarColor(statusBarColor);
+        }
+    }
 
 
+    @Override
+    public void onStateChange(int state) {
+
+
+        if (mLatestContentFragment != null) {
+            if (RevealBackgroundView.STATE_FINISHED == state) {
+                mLatestContentFragment.app_bar_layout.setVisibility(View.VISIBLE);
+                mLatestContentFragment.fab_float.setVisibility(View.VISIBLE);
+                setStatusBarColor(Color.TRANSPARENT);
+            }
+        }
+
+
+    }
 
 
 }
