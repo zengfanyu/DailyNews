@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 自定义的带动画效果的ViewPager
+ * 自定义的带动画效果的ViewPager 用于引导页面
  * Created by zfy on 2016/8/13.
  */
 public class ViewPagerWithAnim extends ViewPager {

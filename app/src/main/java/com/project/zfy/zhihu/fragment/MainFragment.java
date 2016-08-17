@@ -15,7 +15,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -37,6 +36,7 @@ import com.project.zfy.zhihu.utils.HttpUtils;
 import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.Kanner;
+import com.project.zfy.zhihu.view.RoundImageView;
 
 import org.apache.http.Header;
 
@@ -87,6 +87,16 @@ public class MainFragment extends BaseFragment {
     private int mCurrentPos;
 
 
+
+
+    /*
+    * initData()方法中,从服务器端获取数据
+    * 而initData()方法是在OnActivityCreated()方法中调用
+    * 又onStart()方法在OnActivityCreated()后调用
+    * 所以此处,我们要等从服务器端拿到数据之后,再通过putExtra传递给LatestContentPagerActivity
+    *
+    * 故,在onStart方法中对listView的item进行点击监听,然后putExtra
+    * */
     @Override
     public void onStart() {
         super.onStart();
@@ -95,16 +105,15 @@ public class MainFragment extends BaseFragment {
         lv_news.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int[] startingLoacation = new int[2];
-                view.getLocationOnScreen(startingLoacation);
-                startingLoacation[0] += view.getWidth() / 2;
+                int[] startingLocation = new int[2];
+                view.getLocationOnScreen(startingLocation);
+                startingLocation[0] += view.getWidth() / 2;
 
-                //parent is listView ,through listview get adapter then get item bean
-                StoriesEntity entity = (StoriesEntity) parent.getAdapter().getItem(position);
 
 //                Intent intent = new Intent(mActivity, LatestContentActivity.class);
                 Intent intent = new Intent(mActivity, LatestContentPagerActivity.class);
-                intent.putExtra(Constant.START_LOCATION, startingLoacation);
+                intent.putExtra(Constant.START_LOCATION, startingLocation);
+                intent.putExtra("flag","listView");
 
 
                 intent.putExtra("entities", (Serializable) mEntities);
@@ -162,6 +171,7 @@ public class MainFragment extends BaseFragment {
                 intent.putExtra(Constant.START_LOCATION, startingLocation);
                 intent.putExtra("entity", storiesEntity);
                 intent.putExtra("isLight", ((MainActivity) mActivity).isLight());
+                intent.putExtra("flag","kanner");
                 startActivity(intent);
 
                 //取消Activity之间的跳转效果
@@ -481,7 +491,7 @@ public class MainFragment extends BaseFragment {
             if (convertView == null) {
                 holder = new viewHolder();
                 convertView = View.inflate(UIUtils.getContext(), R.layout.main_list_news_item, null);
-                holder.iv_title = (ImageView) convertView.findViewById(R.id.iv_title);
+                holder.iv_title = (RoundImageView) convertView.findViewById(R.id.iv_title);
                 holder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
                 holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
                 holder.ll_root = (LinearLayout) convertView.findViewById(R.id.ll_root);
@@ -555,7 +565,7 @@ public class MainFragment extends BaseFragment {
         class viewHolder implements Serializable {
             TextView tv_topic;
             TextView tv_title;
-            ImageView iv_title;
+            RoundImageView iv_title;
             LinearLayout ll_root;
             FrameLayout fl_container;
             RelativeLayout rl_root;

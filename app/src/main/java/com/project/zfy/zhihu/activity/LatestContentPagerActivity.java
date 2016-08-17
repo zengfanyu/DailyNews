@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.fragment.LatestContentFragment;
 import com.project.zfy.zhihu.global.Constant;
-import com.project.zfy.zhihu.moudle.Latest;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.RevealBackgroundView;
@@ -36,11 +35,8 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
 
     private int[] mStartingLocation;
 
-    private StoriesEntity mEntity;
 
     public RevealBackgroundView mBackgroundView;
-    private Latest mLatest;
-    private int mItemCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +49,8 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
 
     private void initView() {
 
+        mStartingLocation = getIntent().getIntArrayExtra(Constant.START_LOCATION);
+
 
         ViewPager viewPager = new ViewPager(this);
         viewPager.setId(R.id.viewPager);
@@ -64,7 +62,6 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
 
         mBackgroundView = (RevealBackgroundView) findViewById(R.id.rbv_view);
 
-        mStartingLocation = getIntent().getIntArrayExtra(Constant.START_LOCATION);
 
 //        mEntity = (StoriesEntity) getIntent().getSerializableExtra("entity");
 
@@ -80,6 +77,7 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
         final int mCurrentPos = getIntent().getIntExtra("mCurrentPos", 0);
 
 
+
         FragmentManager fm = getSupportFragmentManager();
 
 
@@ -87,9 +85,9 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
             @Override
             public Fragment getItem(int position) {
 
-                int Pos = position + mCurrentPos-1;
+                int Pos = position + mCurrentPos - 1;
 
-                Log.d("Pos--->","Pos"+Pos);
+                Log.d("Pos--->", "Pos" + Pos);
 
                 mLatestContentFragment = LatestContentFragment.newInstance(entities.get(Pos));
 
@@ -98,7 +96,7 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
 
             @Override
             public int getCount() {
-                Log.d("Pos--->","entities.size"+entities.size());
+                Log.d("Pos--->", "entities.size" + entities.size());
 
                 return entities.size();
             }

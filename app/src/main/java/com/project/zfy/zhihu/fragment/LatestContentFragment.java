@@ -40,9 +40,7 @@ public class LatestContentFragment extends BaseFragment {
     public WebCacheDbHelper mDbHelper;
     public StoriesEntity mEntity;
     public WebView mWebView;
-    private Toolbar mToolbar;
     public FloatingActionButton fab_float;
-    private Content mContent;
 
     public AppBarLayout app_bar_layout;
     private ImageView iv_header;
@@ -87,14 +85,14 @@ public class LatestContentFragment extends BaseFragment {
             }
         });
 
-        mToolbar = (Toolbar) view.findViewById(R.id.tb_bar);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.tb_bar);
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         //对左上角的返回键做监听
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -117,8 +115,13 @@ public class LatestContentFragment extends BaseFragment {
         iv_header = (ImageView) view.findViewById(R.id.iv_header);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar_layout);
 
-//        app_bar_layout.setVisibility(View.INVISIBLE);
+        String flag = getActivity().getIntent().getStringExtra("flag");
 
+        if (flag.equals("kanner")) {
+            app_bar_layout.setVisibility(View.INVISIBLE);
+
+
+        }
 
 
         return view;
@@ -182,16 +185,16 @@ public class LatestContentFragment extends BaseFragment {
 
     public void parseJsonData(String responseString) {
         Gson gson = new Gson();
-        mContent = gson.fromJson(responseString, Content.class);
+        Content content = gson.fromJson(responseString, Content.class);
         ImageLoader imageLoader = ImageLoader.getInstance();
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
                 .build();
-        imageLoader.displayImage(mContent.getImage(), iv_header, options);
+        imageLoader.displayImage(content.getImage(), iv_header, options);
 
         String css = "<link rel=\"stylesheet\" href=\"file:///android_asset/css/news.css\" type=\"text/css\">";
-        String html = "<html><head>" + css + "</head><body>" + mContent.getBody() + "</body></html>";
+        String html = "<html><head>" + css + "</head><body>" + content.getBody() + "</body></html>";
         html = html.replace("<div class=\"img-place-holder\">", "");
         mWebView.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
 

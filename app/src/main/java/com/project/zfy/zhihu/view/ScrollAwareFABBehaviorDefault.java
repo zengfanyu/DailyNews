@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 /**
- * $desc
+ * 自定义的FloatingActionButton.Behavior
  * Created by zfy on 2016/8/7.
  */
 public class ScrollAwareFABBehaviorDefault extends FloatingActionButton.Behavior {
