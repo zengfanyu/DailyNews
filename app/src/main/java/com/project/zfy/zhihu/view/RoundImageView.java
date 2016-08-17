@@ -27,7 +27,9 @@ import com.project.zfy.zhihu.R;
  */
 public class RoundImageView extends ImageView {
     /**
-     * 图片的类型，圆形or圆角
+     * 图片的类型，圆形(0)or圆角(1)
+     * <p/>
+     * int类型的默认值是0,所以默认的类型是圆形
      */
     private int type;
     public static final int TYPE_CIRCLE = 0;
@@ -66,13 +68,18 @@ public class RoundImageView extends ImageView {
     public RoundImageView(Context context, AttributeSet attrs) {
 
         super(context, attrs);
+
+        //初始化矩阵
         mMatrix = new Matrix();
+        //初始化画笔
         mBitmapPaint = new Paint();
+
         mBitmapPaint.setAntiAlias(true);
 
         TypedArray a = context.obtainStyledAttributes(attrs,
                 R.styleable.RoundImageView);
 
+        //获取自定义属性的方法
         mBorderRadius = a.getDimensionPixelSize(
                 R.styleable.RoundImageView_borderRadius, (int) TypedValue
                         .applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -92,10 +99,11 @@ public class RoundImageView extends ImageView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         /**
-         * 如果类型是圆形，则强制改变view的宽高一致，以小值为准
+         * 如果类型是圆形，则强制改变view(自定义的ImageView)的宽高一致，以小值为准
          */
         if (type == TYPE_CIRCLE) {
             mWidth = Math.min(getMeasuredWidth(), getMeasuredHeight());
+            //将圆的半径设置为矩形宽的一半,则一定不会超过View 的范围
             mRadius = mWidth / 2;
             setMeasuredDimension(mWidth, mWidth);
         }
@@ -111,23 +119,29 @@ public class RoundImageView extends ImageView {
             return;
         }
 
-        Bitmap bmp = drawableToBitamp(drawable);
+        //将Drawable类型转换为Bitmap类型
+        Bitmap bitmap = drawableToBitamp(drawable);
+
         // 将bmp作为着色器，就是在指定区域内绘制bmp
-        mBitmapShader = new BitmapShader(bmp, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        mBitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+
         float scale = 1.0f;
+
+        //如果类型设置为圆形
         if (type == TYPE_CIRCLE) {
-            // 拿到bitmap宽或高的小值
-            int bSize = Math.min(bmp.getWidth(), bmp.getHeight());
-            scale = mWidth * 1.0f / bSize;
+            // 拿到bitmap宽或高的较小值
+            int bitmapMin = Math.min(bitmap.getWidth(), bitmap.getHeight());
+            scale = mWidth * 1.0f / bitmapMin;
 
         } else if (type == TYPE_ROUND) {
-            Log.e("TAG",
-                    "b'w = " + bmp.getWidth() + " , " + "b'h = "
-                            + bmp.getHeight());
-            if (!(bmp.getWidth() == getWidth() && bmp.getHeight() == getHeight())) {
-                // 如果图片的宽或者高与view的宽高不匹配，计算出需要缩放的比例；缩放后的图片的宽高，一定要大于我们view的宽高；所以我们这里取大值；
-                scale = Math.max(getWidth() * 1.0f / bmp.getWidth(),
-                        getHeight() * 1.0f / bmp.getHeight());
+            Log.d("TAG",
+                    "b'w = " + bitmap.getWidth() + " , " + "b'h = "
+                            + bitmap.getHeight());
+            if (!(bitmap.getWidth() == getWidth() && bitmap.getHeight() == getHeight())) {
+                // 如果图片的宽或者高与view的宽高不匹配，计算出需要缩放的比例；
+                // 缩放后的图片的宽高，一定要大于我们view的宽高；所以我们这里取大值；
+                scale = Math.max(getWidth() * 1.0f / bitmap.getWidth(),
+                        getHeight() * 1.0f / bitmap.getHeight());
             }
 
         }
@@ -141,7 +155,7 @@ public class RoundImageView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.e("TAG", "onDraw");
+        Log.d("TAG", "onDraw");
         if (getDrawable() == null) {
             return;
         }
@@ -212,6 +226,9 @@ public class RoundImageView extends ImageView {
 
     }
 
+    /*
+    * 对外界提供的修改圆角矩形的圆角半径的方法
+    * */
     public void setBorderRadius(int borderRadius) {
         int pxVal = dp2px(borderRadius);
         if (this.mBorderRadius != pxVal) {
@@ -220,6 +237,9 @@ public class RoundImageView extends ImageView {
         }
     }
 
+    /*
+    * 对外提供的修改形状的方法
+    * */
     public void setType(int type) {
         if (this.type != type) {
             this.type = type;

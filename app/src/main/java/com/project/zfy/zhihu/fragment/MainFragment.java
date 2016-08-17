@@ -87,8 +87,6 @@ public class MainFragment extends BaseFragment {
     private int mCurrentPos;
 
 
-
-
     /*
     * initData()方法中,从服务器端获取数据
     * 而initData()方法是在OnActivityCreated()方法中调用
@@ -112,13 +110,11 @@ public class MainFragment extends BaseFragment {
 
 //                Intent intent = new Intent(mActivity, LatestContentActivity.class);
                 Intent intent = new Intent(mActivity, LatestContentPagerActivity.class);
+
                 intent.putExtra(Constant.START_LOCATION, startingLocation);
-                intent.putExtra("flag","listView");
-
-
+                intent.putExtra("flag", "listView");
                 intent.putExtra("entities", (Serializable) mEntities);
                 mCurrentPos = position;
-
                 intent.putExtra("mCurrentPos", mCurrentPos);
 
                 String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
@@ -171,7 +167,7 @@ public class MainFragment extends BaseFragment {
                 intent.putExtra(Constant.START_LOCATION, startingLocation);
                 intent.putExtra("entity", storiesEntity);
                 intent.putExtra("isLight", ((MainActivity) mActivity).isLight());
-                intent.putExtra("flag","kanner");
+                intent.putExtra("flag", "kanner");
                 startActivity(intent);
 
                 //取消Activity之间的跳转效果

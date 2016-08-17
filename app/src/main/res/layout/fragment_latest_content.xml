@@ -69,8 +69,10 @@
 
             -->
 
-            <ImageView
+            <com.project.zfy.zhihu.view.RoundImageView
                 android:id="@+id/iv_header"
+                app:type="round"
+                app:borderRadius="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
