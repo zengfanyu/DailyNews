@@ -124,7 +124,7 @@ public class MainNewsItemAdapter extends BaseAdapter {
             convertView = View.inflate(UIUtils.getContext(), R.layout.main_list_news_item, null);
             holder.iv_title = (ImageView) convertView.findViewById(R.id.iv_title);
             holder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
-            holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
+//            holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
             holder.ll_root = (LinearLayout) convertView.findViewById(R.id.ll_root);
             holder.fl_container = (FrameLayout) convertView.findViewById(R.id.fl_container);
             holder.rl_root = (RelativeLayout) convertView.findViewById(R.id.rl_root);
@@ -154,7 +154,7 @@ public class MainNewsItemAdapter extends BaseAdapter {
         }
 
         holder.ll_root.setBackgroundColor(UIUtils.getColor(R.color.light_news_item));
-        holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
+//        holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
 
 
         //判断是否是头item
@@ -164,13 +164,13 @@ public class MainNewsItemAdapter extends BaseAdapter {
             holder.fl_container.setBackgroundColor(Color.TRANSPARENT);
             holder.tv_title.setVisibility(View.GONE);
             holder.iv_title.setVisibility(View.GONE);
-            holder.tv_topic.setVisibility(View.VISIBLE);
-            holder.tv_topic.setText(entity.getTitle());
+//            holder.tv_topic.setVisibility(View.VISIBLE);
+//            holder.tv_topic.setText(entity.getTitle());
 
         } else {
             //如果不是,现实普通的布局
             holder.fl_container.setBackgroundResource(R.drawable.item_background_selector_light);
-            holder.tv_topic.setVisibility(View.GONE);
+//            holder.tv_topic.setVisibility(View.GONE);
             holder.tv_title.setVisibility(View.VISIBLE);
             holder.iv_title.setVisibility(View.VISIBLE);
             holder.tv_title.setText(entity.getTitle());
@@ -182,7 +182,7 @@ public class MainNewsItemAdapter extends BaseAdapter {
 
 
     class viewHolder {
-        TextView tv_topic;
+//        TextView tv_topic;
         TextView tv_title;
         ImageView iv_title;
         LinearLayout ll_root;

@@ -3,8 +3,8 @@ package com.project.zfy.zhihu.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -54,6 +53,7 @@ public class MainFragment extends BaseFragment {
     private MainNewsItemAdapter mAdapter;
     private boolean isLoading = false;  //是否正在加载数据的标记
     private Latest mLatest;
+    private Handler mHandler;
 
 
     /**
@@ -95,6 +95,8 @@ public class MainFragment extends BaseFragment {
     *
     * 故,在onStart方法中对listView的item进行点击监听,然后putExtra
     * */
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -109,13 +111,14 @@ public class MainFragment extends BaseFragment {
 
 
 //                Intent intent = new Intent(mActivity, LatestContentActivity.class);
-                Intent intent = new Intent(mActivity, LatestContentPagerActivity.class);
+                final Intent intent = new Intent(mActivity, LatestContentPagerActivity.class);
 
                 intent.putExtra(Constant.START_LOCATION, startingLocation);
                 intent.putExtra("flag", "listView");
                 intent.putExtra("entities", (Serializable) mEntities);
                 mCurrentPos = position;
                 intent.putExtra("mCurrentPos", mCurrentPos);
+
 
                 String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
                 //只有不包含当前点击的对象的ID的时候,我们才追加,避免同一个id的重复
@@ -129,6 +132,7 @@ public class MainFragment extends BaseFragment {
                 mTv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
 
                 startActivity(intent);
+
                 mActivity.overridePendingTransition(0, 0);
 
             }
@@ -175,9 +179,9 @@ public class MainFragment extends BaseFragment {
             }
         });
 
+
         //给ListView设置头布局
         lv_news.addHeaderView(header);
-
 
         //监听listView 的滑动事件
         lv_news.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -489,10 +493,12 @@ public class MainFragment extends BaseFragment {
                 convertView = View.inflate(UIUtils.getContext(), R.layout.main_list_news_item, null);
                 holder.iv_title = (RoundImageView) convertView.findViewById(R.id.iv_title);
                 holder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
-                holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
+//                holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
                 holder.ll_root = (LinearLayout) convertView.findViewById(R.id.ll_root);
-                holder.fl_container = (FrameLayout) convertView.findViewById(R.id.fl_container);
+//                holder.fl_container = (FrameLayout) convertView.findViewById(R.id.fl_container);
                 holder.rl_root = (RelativeLayout) convertView.findViewById(R.id.rl_root);
+
+
                 convertView.setTag(holder);
             } else {
                 holder = (viewHolder) convertView.getTag();
@@ -531,27 +537,30 @@ public class MainFragment extends BaseFragment {
 
 
             holder.ll_root.setBackgroundColor(UIUtils.getColor(R.color.light_news_item));
-            holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
+//            holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
 
 
             //判断是否是头item
             StoriesEntity entity = mEntities.get(position);
             if (entity.getType() == Constant.TOPIC) {
                 //是头item,那么只显示一个tpic的TextView,其余的都隐藏掉
-                holder.fl_container.setBackgroundColor(Color.TRANSPARENT);
+//                holder.fl_container.setBackgroundColor(Color.TRANSPARENT);
                 holder.tv_title.setVisibility(View.GONE);
                 holder.iv_title.setVisibility(View.GONE);
-                holder.tv_topic.setVisibility(View.VISIBLE);
-                holder.tv_topic.setText(entity.getTitle());
+//                holder.tv_topic.setVisibility(View.VISIBLE);
+//                holder.tv_topic.setText(entity.getTitle());
+
 
             } else {
                 //如果不是,现实普通的布局
-                holder.fl_container.setBackgroundResource(R.drawable.item_background_selector_light);
-                holder.tv_topic.setVisibility(View.GONE);
+//                holder.fl_container.setBackgroundResource(R.drawable.item_background_selector_light);
+//                holder.tv_topic.setVisibility(View.GONE);
                 holder.tv_title.setVisibility(View.VISIBLE);
                 holder.iv_title.setVisibility(View.VISIBLE);
                 holder.tv_title.setText(entity.getTitle());
                 mImageLoader.displayImage(entity.getImages().get(0), holder.iv_title, mOptions);
+
+
             }
 
             return convertView;
@@ -559,11 +568,11 @@ public class MainFragment extends BaseFragment {
 
 
         class viewHolder implements Serializable {
-            TextView tv_topic;
+            //            TextView tv_topic;
             TextView tv_title;
             RoundImageView iv_title;
             LinearLayout ll_root;
-            FrameLayout fl_container;
+            //            FrameLayout fl_container;
             RelativeLayout rl_root;
 
         }

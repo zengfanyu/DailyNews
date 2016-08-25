@@ -18,10 +18,13 @@ import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.orhanobut.logger.Logger;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.activity.MainActivity;
 import com.project.zfy.zhihu.activity.NewsContentActivity;
 import com.project.zfy.zhihu.adapter.ThemeNewsItemAdapter;
+import com.project.zfy.zhihu.event.MenuItemEvent;
+import com.project.zfy.zhihu.event.NewsFragmentEvent;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.News;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
@@ -30,6 +33,9 @@ import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 
 import org.apache.http.Header;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * 主题日报的Fragment
@@ -47,19 +53,39 @@ public class NewsFragment extends BaseFragment {
     private ImageLoader mImageLoader;
 
 
-    /**
-     * 构造方法,用于传参
-     *
-     * @param title 在主题日报themes中,此处用于显示在statusBar
-     * @param id    在主题日报themes中,此处是用于在基地址之后拼接Url地址的
-     * @return NewsFragment
-     * @author zfy
-     * @created at 2016/8/4 8:37
-     */
-    public NewsFragment(String title, String id) {
+//    /**
+//     * 构造方法,用于传参
+//     *
+//     * @param title 在主题日报themes中,此处用于显示在statusBar
+//     * @param id    在主题日报themes中,此处是用于在基地址之后拼接Url地址的
+//     * @return NewsFragment
+//     * @author zfy
+//     * @created at 2016/8/4 8:37
+//     */
+//    public NewsFragment(String title, String id) {
+//
+//        this.title = title;
+//        this.urlId = id;
+//    }
 
-        this.title = title;
-        this.urlId = id;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onMessageEventMainThread(MenuItemEvent event) {
+        urlId = event.getId();
+        title = event.getTitle();
+        Logger.d("onEventMainThread: execute");
     }
 
     @Override
@@ -111,8 +137,12 @@ public class NewsFragment extends BaseFragment {
 
                 StoriesEntity entity = (StoriesEntity) parent.getAdapter().getItem(position);
                 Intent intent = new Intent(mActivity, NewsContentActivity.class);
-                intent.putExtra(Constant.START_LOCATION, startingLocation);
-                intent.putExtra("entity", entity);
+//                intent.putExtra(Constant.START_LOCATION, startingLocation);
+//                intent.putExtra("entity", entity);
+
+                EventBus.getDefault().postSticky(new NewsFragmentEvent(startingLocation,entity));
+
+
 
 
                 String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
@@ -135,10 +165,11 @@ public class NewsFragment extends BaseFragment {
         return view;
     }
 
-
     @Override
     public void initData() {
         super.initData();
+
+
         if (HttpUtils.isNetworkConnected(mActivity)) {
             HttpUtils.get(Constant.THEMENEWS + urlId, new TextHttpResponseHandler() {
                 @Override

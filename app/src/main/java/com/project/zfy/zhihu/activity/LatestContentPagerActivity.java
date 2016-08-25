@@ -43,9 +43,13 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_content);
 
+
         initView();
+
         initAnimation(savedInstanceState);
+
     }
+
 
     private void initView() {
 
@@ -100,7 +104,7 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
 
             @Override
             public int getCount() {
-                Log.d("Pos--->", "entities.size" + entities.size());
+//                Log.d("Pos--->", "entities.size" + entities.size());
 
                 /*
                 * 此处要-mCurrentPos是因为:
@@ -118,6 +122,7 @@ public class LatestContentPagerActivity extends AppCompatActivity implements Rev
 
 
     }
+
 
     public void initAnimation(Bundle bundle) {
         setupRevealBackground(bundle);

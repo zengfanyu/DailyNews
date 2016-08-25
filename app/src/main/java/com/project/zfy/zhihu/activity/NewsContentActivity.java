@@ -12,11 +12,15 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.project.zfy.zhihu.R;
+import com.project.zfy.zhihu.event.NewsFragmentEvent;
 import com.project.zfy.zhihu.fragment.NewsContentFragment;
-import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.RevealBackgroundView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * 某一主题日报的具体某一条item的activity
@@ -37,11 +41,13 @@ public class NewsContentActivity extends AppCompatActivity implements RevealBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_content);
 
+        EventBus.getDefault().register(this);
+
         mBackgroundView = (RevealBackgroundView) findViewById(R.id.rbv_view);
 
-        mStartingLocation = getIntent().getIntArrayExtra(Constant.START_LOCATION);
-
-        mEntity = (StoriesEntity) getIntent().getSerializableExtra("entity");
+//        mStartingLocation = getIntent().getIntArrayExtra(Constant.START_LOCATION);
+//
+//        mEntity = (StoriesEntity) getIntent().getSerializableExtra("entity");
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -54,6 +60,13 @@ public class NewsContentActivity extends AppCompatActivity implements RevealBack
         }
 
         initAnimation(savedInstanceState);
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN , sticky = true)
+    public void onMessageEventMainThread(NewsFragmentEvent event) {
+        mStartingLocation=event.getStartingLocation();
+        mEntity=event.getEntity();
 
     }
 
@@ -112,5 +125,11 @@ public class NewsContentActivity extends AppCompatActivity implements RevealBack
             }
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

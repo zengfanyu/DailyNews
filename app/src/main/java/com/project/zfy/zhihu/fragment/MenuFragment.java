@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.activity.MainActivity;
+import com.project.zfy.zhihu.event.MenuItemEvent;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.global.MyApplication;
 import com.project.zfy.zhihu.moudle.ThemesListItem;
@@ -22,6 +23,7 @@ import com.project.zfy.zhihu.utils.ToastUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 
 import org.apache.http.Header;
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,10 +76,11 @@ public class MenuFragment extends BaseFragment {
         lv_item.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                EventBus.getDefault().postSticky(new MenuItemEvent(mItems.get(position).getTitle(), mItems.get(position).getId()));
                 getFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out)
-                        .replace(R.id.fl_content, new NewsFragment(mItems.get(position).getTitle(), mItems.get(position).getId()))
+                        .replace(R.id.fl_content, new NewsFragment())
                         .commit();
 
                 //更新当前显示界面的标记值

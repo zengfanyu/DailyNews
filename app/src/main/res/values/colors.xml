@@ -18,4 +18,6 @@
 
     <!--白天模式下 menu中listview的item的字体颜色-->
     <color name="light_menu_listview_textcolcr">#FF000000</color>
+    <!--点击波纹画笔颜色-->
+    <color name="reveal_color">#1b000000</color>
 </resources>
