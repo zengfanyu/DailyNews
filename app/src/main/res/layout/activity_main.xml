@@ -43,7 +43,7 @@
         <fragment
             android:id="@+id/menu_fragment"
             android:name="com.project.zfy.zhihu.fragment.MenuFragment"
-            android:layout_width="300dp"
+            android:layout_width="@dimen/dimen_590_dip"
             android:layout_height="match_parent"
             android:layout_gravity="start"/>
 
