@@ -3,7 +3,6 @@ package com.project.zfy.zhihu.activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
@@ -29,7 +28,7 @@ import java.io.IOException;
 
 import cn.sharesdk.framework.ShareSDK;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity {
 
     private ImageView iv_start;
     private File imageFile;
@@ -41,8 +40,8 @@ public class SplashActivity extends AppCompatActivity {
         //在入口activity出初始化SharedSDK
         ShareSDK.initSDK(this, "15d2bf5fa8b3f");
 
-
         setContentView(R.layout.activity_splash);
+
 
         initView();
         initAnimation();

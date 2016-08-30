@@ -88,6 +88,7 @@ public class LatestContentActivity extends AppCompatActivity implements RevealBa
 
         } else {
             mBackgroundView.setToFinishedFrame();
+
         }
 
     }

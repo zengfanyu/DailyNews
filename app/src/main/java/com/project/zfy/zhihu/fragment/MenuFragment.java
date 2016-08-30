@@ -1,5 +1,6 @@
 package com.project.zfy.zhihu.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.project.zfy.zhihu.R;
+import com.project.zfy.zhihu.activity.LoginActivity;
 import com.project.zfy.zhihu.activity.MainActivity;
 import com.project.zfy.zhihu.event.MenuItemEvent;
 import com.project.zfy.zhihu.global.Constant;
@@ -68,6 +70,20 @@ public class MenuFragment extends BaseFragment {
                 //收起侧边栏
                 ((MainActivity) mActivity).closeMenu();
 
+            }
+        });
+
+        //对登录按钮设置时间监听
+        tv_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mActivity, LoginActivity.class);
+                startActivity(intent);
+                mActivity.overridePendingTransition(R.anim.slide_in_from_right,R.anim.slide_out_to_left);
+
+
+                //收起侧边栏
+                ((MainActivity) mActivity).closeMenu();
             }
         });
 

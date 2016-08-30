@@ -5,5 +5,14 @@
     <string name="offline_download">离线下载</string>
     <string name="HomePage">首页</string>
     <string name="please_login">请登录</string>
-    <string name="copyright">BY:ZFY FOR HER</string>
+    <string name="copyright">BY:ZFY</string>
+    <string name="login">登录</string>
+    <string name="Username">用户名</string>
+    <string name="Password">密码</string>
+    <string name="go">登录</string>
+    <string name="forgot_your_password">忘记密码?</string>
+    <string name="login_success">登录成功</string>
+    <string name="register">注册</string>
+    <string name="repeat_password">确认密码</string>
+    <string name="next">下一步</string>
 </resources>

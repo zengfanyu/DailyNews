@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
  * guide页面
  * Created by zfy on 2016/8/13.
  */
-public class GuideActivity extends AppCompatActivity {
+public class GuideActivity extends BaseActivity {
 
     private ViewPagerWithAnim mVp_pager;
     private int[] mImgIDs;

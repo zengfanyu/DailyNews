@@ -27,17 +27,20 @@ import com.project.zfy.zhihu.R;
 import com.project.zfy.zhihu.activity.LatestContentActivity;
 import com.project.zfy.zhihu.activity.LatestContentPagerActivity;
 import com.project.zfy.zhihu.activity.MainActivity;
+import com.project.zfy.zhihu.event.DialogFragmentEvent;
 import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.Before;
 import com.project.zfy.zhihu.moudle.Latest;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.HttpUtils;
 import com.project.zfy.zhihu.utils.SharedPreferenceUtils;
+import com.project.zfy.zhihu.utils.ToastUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.Kanner;
 import com.project.zfy.zhihu.view.RoundImageView;
 
 import org.apache.http.Header;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -234,6 +237,7 @@ public class MainFragment extends BaseFragment {
 
 
         lv_news.setAdapter(mAdapter);
+
 
 
         return view;
@@ -488,6 +492,8 @@ public class MainFragment extends BaseFragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             viewHolder holder;
+            //判断是否是头item
+            final StoriesEntity entity = mEntities.get(position);
             if (convertView == null) {
                 holder = new viewHolder();
                 convertView = View.inflate(UIUtils.getContext(), R.layout.main_list_news_item, null);
@@ -539,9 +545,25 @@ public class MainFragment extends BaseFragment {
             holder.ll_root.setBackgroundColor(UIUtils.getColor(R.color.light_news_item));
 //            holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
 
+            final int ClickPos=position;
+            holder.iv_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ToastUtils.ToastUtils(getActivity(), "ImageVie clicked!" + ClickPos);
+                    android.app.FragmentManager fm = getActivity().getFragmentManager();
 
-            //判断是否是头item
-            StoriesEntity entity = mEntities.get(position);
+                    ImageViewDialogFragment imageViewDialogFragment = new ImageViewDialogFragment();
+                    imageViewDialogFragment.show(fm,"imageViewDialogFragment");
+
+                    String imgUrl = entity.getImages().get(0);
+
+                    EventBus.getDefault().postSticky(new DialogFragmentEvent(imgUrl));
+
+                }
+            });
+
+
+
             if (entity.getType() == Constant.TOPIC) {
                 //是头item,那么只显示一个tpic的TextView,其余的都隐藏掉
 //                holder.fl_container.setBackgroundColor(Color.TRANSPARENT);

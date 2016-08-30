@@ -65,6 +65,18 @@
 
         </activity>
 
+        <activity android:name=".activity.LoginActivity">
+
+        </activity>
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:theme="@style/Translucent">
+
+        </activity>
+        <activity android:name=".activity.LoginSuccessActivity">
+
+        </activity>
+
         <activity
             android:name="com.mob.tools.MobUIShell"
             android:configChanges="keyboardHidden|orientation|screenSize"
