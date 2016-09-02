@@ -3,7 +3,6 @@ package com.project.zfy.zhihu.view;
 import android.content.Context;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -31,15 +30,16 @@ public class Kanner extends FrameLayout implements OnClickListener {
     private DisplayImageOptions options;
     private List<View> views;
     private Context context;
-    private ViewPager vp;
+    private ViewPagerWithAnim vp;
     private boolean isAutoPlay;
     private int currentItem;
-    private int delayTime;
-    private LinearLayout ll_dot;
     private List<ImageView> iv_dots;
     private Handler handler = new Handler();
     private OnItemClickListener mItemClickListener;
 
+    /*
+    * 构造方法
+    * */
     public Kanner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mImageLoader = ImageLoader.getInstance();
@@ -49,19 +49,21 @@ public class Kanner extends FrameLayout implements OnClickListener {
                 .build();
         this.context = context;
         this.topStoriesEntities = new ArrayList<>();
-        initView();
+
+        views = new ArrayList<>();
+        iv_dots = new ArrayList<>();
     }
 
-    private void initView() {
-        views = new ArrayList<View>();
-        iv_dots = new ArrayList<ImageView>();
-        delayTime = 2000;
-    }
 
+    /*
+    * 最终回调的都是三个参数的构造方法
+    * */
     public Kanner(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
-
+    /*
+    * 最终回调的都是三个参数的构造方法
+    * */
     public Kanner(Context context) {
         this(context, null);
     }
@@ -79,11 +81,14 @@ public class Kanner extends FrameLayout implements OnClickListener {
     private void initUI() {
         View view = LayoutInflater.from(context).inflate(
                 R.layout.kanner_layout, this, true);
-        vp = (ViewPager) view.findViewById(R.id.vp);
-        ll_dot = (LinearLayout) view.findViewById(R.id.ll_dot);
-        ll_dot.removeAllViews();
+        vp = (ViewPagerWithAnim) view.findViewById(R.id.vp);
+        LinearLayout ll_dot = (LinearLayout) view.findViewById(R.id.ll_dot);
+//        ll_dot.removeAllViews();
 
         int len = topStoriesEntities.size();
+        /*
+        * 初始化ViewPagerIndicator
+        * */
         for (int i = 0; i < len; i++) {
             ImageView iv_dot = new ImageView(context);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -95,11 +100,18 @@ public class Kanner extends FrameLayout implements OnClickListener {
             iv_dots.add(iv_dot);
         }
 
+        /*
+        * 此处把len长度+1,目的就是为了下面分情况设置Imageview和title
+        * 当i==len+1的时候,
+        * 此时实际上是没有展示的imageView和title的
+        * 但是在此时加载位置为0处的imageview和title
+        * 这样就达到了一个循环滚动的效果
+        * */
         for (int i = 0; i <= len + 1; i++) {
-            View fm = LayoutInflater.from(context).inflate(
+            View pagerContentView = LayoutInflater.from(context).inflate(
                     R.layout.kanner_content_layout, null);
-            ImageView iv = (ImageView) fm.findViewById(R.id.iv_title);
-            TextView tv_title = (TextView) fm.findViewById(R.id.tv_title);
+            ImageView iv = (ImageView) pagerContentView.findViewById(R.id.iv_title);
+            TextView tv_title = (TextView) pagerContentView.findViewById(R.id.tv_title);
             iv.setScaleType(ScaleType.CENTER_CROP);
 //            iv.setBackgroundResource(R.drawable.loading1);
             if (i == 0) {
@@ -112,10 +124,12 @@ public class Kanner extends FrameLayout implements OnClickListener {
                 mImageLoader.displayImage(topStoriesEntities.get(i - 1).getImage(), iv, options);
                 tv_title.setText(topStoriesEntities.get(i - 1).getTitle());
             }
-            fm.setOnClickListener(this);
-            views.add(fm);
+            //设置点击事件的监听
+            pagerContentView.setOnClickListener(this);
+            views.add(pagerContentView);
         }
         vp.setAdapter(new MyPagerAdapter());
+        //设置ViewPage可以被点击
         vp.setFocusable(true);
         vp.setCurrentItem(1);
         currentItem = 1;
@@ -148,6 +162,9 @@ public class Kanner extends FrameLayout implements OnClickListener {
         }
     };
 
+    /*
+    * ViewPager的Adapter
+    * */
     class MyPagerAdapter extends PagerAdapter {
 
         @Override
@@ -173,17 +190,23 @@ public class Kanner extends FrameLayout implements OnClickListener {
 
     }
 
+    /*
+    * 监听ViewPager的滑动事件
+    * */
     class MyOnPageChangeListener implements OnPageChangeListener {
 
         @Override
         public void onPageScrollStateChanged(int arg0) {
             switch (arg0) {
+                // 1-->当前VP正在被用户拖动
                 case 1:
                     isAutoPlay = false;
                     break;
+                //2-->自动滑动的过程中
                 case 2:
                     isAutoPlay = true;
                     break;
+                //静止状态
                 case 0:
                     if (vp.getCurrentItem() == 0) {
                         vp.setCurrentItem(topStoriesEntities.size(), false);
@@ -220,13 +243,14 @@ public class Kanner extends FrameLayout implements OnClickListener {
     }
 
     public interface OnItemClickListener {
-        public void click(View v, Latest.TopStoriesEntity entity);
+        void click(View v, Latest.TopStoriesEntity entity);
     }
 
     @Override
     public void onClick(View v) {
         if (mItemClickListener != null) {
             Latest.TopStoriesEntity entity = topStoriesEntities.get(vp.getCurrentItem() - 1);
+            //接口回调
             mItemClickListener.click(v, entity);
         }
     }

@@ -2,32 +2,18 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        android:layout_width="match_parent"
        android:layout_height="match_parent">
-
-
-
-
-
-        <android.support.v4.view.ViewPager
+        <com.project.zfy.zhihu.view.ViewPagerWithAnim
             android:id="@+id/vp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
-
-
-
         <LinearLayout
             android:id="@+id/ll_dot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:gravity="right"
+            android:gravity="center_horizontal"
             android:orientation="horizontal"
             android:layout_alignBottom="@+id/vp"
             android:padding="8dp">
         </LinearLayout>
-
-
-
-
-
 </merge>

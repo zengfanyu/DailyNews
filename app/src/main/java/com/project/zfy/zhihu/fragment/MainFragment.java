@@ -3,6 +3,7 @@ package com.project.zfy.zhihu.fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -108,35 +110,36 @@ public class MainFragment extends BaseFragment {
         lv_news.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int[] startingLocation = new int[2];
-                view.getLocationOnScreen(startingLocation);
-                startingLocation[0] += view.getWidth() / 2;
-
-
+                 StoriesEntity item = (StoriesEntity) parent.getAdapter().getItem(position);
+                if (item.getType()!=Constant.TOPIC) {
+                    int[] startingLocation = new int[2];
+                    view.getLocationOnScreen(startingLocation);
+                    startingLocation[0] += view.getWidth() / 2;
 //                Intent intent = new Intent(mActivity, LatestContentActivity.class);
-                final Intent intent = new Intent(mActivity, LatestContentPagerActivity.class);
+                    final Intent intent = new Intent(mActivity, LatestContentPagerActivity.class);
 
-                intent.putExtra(Constant.START_LOCATION, startingLocation);
-                intent.putExtra("flag", "listView");
-                intent.putExtra("entities", (Serializable) mEntities);
-                mCurrentPos = position;
-                intent.putExtra("mCurrentPos", mCurrentPos);
+                    intent.putExtra(Constant.START_LOCATION, startingLocation);
+                    intent.putExtra("flag", "listView");
+                    intent.putExtra("entities", (Serializable) mEntities);
+                    mCurrentPos = position;
+                    intent.putExtra("mCurrentPos", mCurrentPos);
 
 
-                String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
-                //只有不包含当前点击的对象的ID的时候,我们才追加,避免同一个id的重复
-                if (!readIds.contains(((StoriesEntity) parent.getAdapter().getItem(position)).getId() + "")) {
-                    readIds = readIds + ((StoriesEntity) parent.getAdapter().getItem(position)).getId() + ",";
-                    SharedPreferenceUtils.putString(mActivity, Constant.READ_IDS, readIds);
+                    String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
+                    //只有不包含当前点击的对象的ID的时候,我们才追加,避免同一个id的重复
+                    if (!readIds.contains(((StoriesEntity) parent.getAdapter().getItem(position)).getId() + "")) {
+                        readIds = readIds + ((StoriesEntity) parent.getAdapter().getItem(position)).getId() + ",";
+                        SharedPreferenceUtils.putString(mActivity, Constant.READ_IDS, readIds);
+                    }
+
+                    //当对象被点击之后,将字体颜色变为灰色
+                    TextView mTv_title = (TextView) view.findViewById(R.id.tv_title);
+                    mTv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
+
+                    startActivity(intent);
+
+                    mActivity.overridePendingTransition(0, 0);
                 }
-
-                //当对象被点击之后,将字体颜色变为灰色
-                TextView mTv_title = (TextView) view.findViewById(R.id.tv_title);
-                mTv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
-
-                startActivity(intent);
-
-                mActivity.overridePendingTransition(0, 0);
 
             }
         });
@@ -239,7 +242,6 @@ public class MainFragment extends BaseFragment {
         lv_news.setAdapter(mAdapter);
 
 
-
         return view;
     }
 
@@ -319,10 +321,10 @@ public class MainFragment extends BaseFragment {
             @Override
             public void run() {
                 List<StoriesEntity> storiesEntities = before.getStories();
-               /* StoriesEntity topic = new StoriesEntity();
+                StoriesEntity topic = new StoriesEntity();
                 topic.setType(Constant.TOPIC);
                 topic.setTitle(legalDate(mDate));
-                storiesEntities.add(0, topic);*/
+                storiesEntities.add(0, topic);
                 mAdapter.addList(storiesEntities);
                 isLoading = false;
 
@@ -417,7 +419,7 @@ public class MainFragment extends BaseFragment {
         Gson gson = new Gson();
         mLatest = gson.fromJson(responseString, Latest.class);
         mDate = mLatest.getDate();
-        kanner.setTopEntities(mLatest.getTop_stories());
+        kanner.setTopEntities(mLatest.getTopStories());
         UIUtils.getHandler().post(new Runnable() {
             @Override
             public void run() {
@@ -425,10 +427,10 @@ public class MainFragment extends BaseFragment {
                 //手动添加新闻的头标题,用TOPIC区分开,在此处设定一个StoriesEntity的type==TOPIC,
                 //然后添加到第0个位置,在MainNewsItemAdapter
                 List<StoriesEntity> storiesEntities = mLatest.getStories();
-               /* StoriesEntity topic = new StoriesEntity();
+                StoriesEntity topic = new StoriesEntity();
                 topic.setType(Constant.TOPIC);
                 topic.setTitle("今日热闻");
-                storiesEntities.add(0, topic);*/
+                storiesEntities.add(0, topic);
                 //在addList()方法中已经刷新过了.!!
                 mAdapter.addList(storiesEntities);
                 isLoading = false;
@@ -499,9 +501,9 @@ public class MainFragment extends BaseFragment {
                 convertView = View.inflate(UIUtils.getContext(), R.layout.main_list_news_item, null);
                 holder.iv_title = (RoundImageView) convertView.findViewById(R.id.iv_title);
                 holder.tv_title = (TextView) convertView.findViewById(R.id.tv_title);
-//                holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
+                holder.tv_topic = (TextView) convertView.findViewById(R.id.tv_topic);
                 holder.ll_root = (LinearLayout) convertView.findViewById(R.id.ll_root);
-//                holder.fl_container = (FrameLayout) convertView.findViewById(R.id.fl_container);
+                holder.fl_container = (FrameLayout) convertView.findViewById(R.id.fl_container);
                 holder.rl_root = (RelativeLayout) convertView.findViewById(R.id.rl_root);
 
 
@@ -528,12 +530,6 @@ public class MainFragment extends BaseFragment {
             }
 
 
-            /*String readSeq = SharedPreferenceUtils.getString(UIUtils.getContext(), "read", "");
-            if (readSeq.contains(mEntities.get(position).getId() + "")) {
-                holder.tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
-            } else {
-                holder.tv_title.setTextColor(UIUtils.getColor(R.color.light_news_topic));
-            }*/
             String readIds = SharedPreferenceUtils.getString(mActivity, Constant.READ_IDS, "");
             if (readIds.contains(getItem(position).getId() + "")) {
                 holder.tv_title.setTextColor(UIUtils.getColor(R.color.clicked_tv_textcolor));
@@ -545,7 +541,7 @@ public class MainFragment extends BaseFragment {
             holder.ll_root.setBackgroundColor(UIUtils.getColor(R.color.light_news_item));
 //            holder.tv_topic.setTextColor(UIUtils.getColor(R.color.light_news_topic));
 
-            final int ClickPos=position;
+            final int ClickPos = position;
             holder.iv_title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -553,7 +549,7 @@ public class MainFragment extends BaseFragment {
                     android.app.FragmentManager fm = getActivity().getFragmentManager();
 
                     ImageViewDialogFragment imageViewDialogFragment = new ImageViewDialogFragment();
-                    imageViewDialogFragment.show(fm,"imageViewDialogFragment");
+                    imageViewDialogFragment.show(fm, "imageViewDialogFragment");
 
                     String imgUrl = entity.getImages().get(0);
 
@@ -563,38 +559,35 @@ public class MainFragment extends BaseFragment {
             });
 
 
-
             if (entity.getType() == Constant.TOPIC) {
                 //是头item,那么只显示一个tpic的TextView,其余的都隐藏掉
-//                holder.fl_container.setBackgroundColor(Color.TRANSPARENT);
+                holder.fl_container.setBackgroundColor(Color.TRANSPARENT);
                 holder.tv_title.setVisibility(View.GONE);
                 holder.iv_title.setVisibility(View.GONE);
-//                holder.tv_topic.setVisibility(View.VISIBLE);
-//                holder.tv_topic.setText(entity.getTitle());
-
-
+                holder.rl_root.setVisibility(View.GONE);
+                holder.tv_topic.setVisibility(View.VISIBLE);
+                holder.tv_topic.setText(entity.getTitle());
+                //标题的头View是不可以被点击的
+                holder.ll_root.setClickable(false);
             } else {
                 //如果不是,现实普通的布局
 //                holder.fl_container.setBackgroundResource(R.drawable.item_background_selector_light);
-//                holder.tv_topic.setVisibility(View.GONE);
+                holder.tv_topic.setVisibility(View.GONE);
                 holder.tv_title.setVisibility(View.VISIBLE);
                 holder.iv_title.setVisibility(View.VISIBLE);
                 holder.tv_title.setText(entity.getTitle());
                 mImageLoader.displayImage(entity.getImages().get(0), holder.iv_title, mOptions);
-
-
             }
-
             return convertView;
         }
 
 
         class viewHolder implements Serializable {
-            //            TextView tv_topic;
+            TextView tv_topic;
             TextView tv_title;
             RoundImageView iv_title;
             LinearLayout ll_root;
-            //            FrameLayout fl_container;
+            FrameLayout fl_container;
             RelativeLayout rl_root;
 
         }

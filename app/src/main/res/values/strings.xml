@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Copycat</string>
+    <string name="app_name">DailyNews</string>
     <string name="action_settings">Settings</string>
     <string name="MyBackup">我的收藏</string>
     <string name="offline_download">离线下载</string>

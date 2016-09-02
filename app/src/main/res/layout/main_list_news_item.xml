@@ -7,6 +7,19 @@
     android:background="@color/light_news_item"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:id="@+id/fl_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_topic"
+            android:text="今日热文"
+            android:padding="2dp"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
 
     <RelativeLayout
         android:id="@+id/rl_root"
@@ -42,5 +55,6 @@
             android:textColor="@android:color/black"
             android:textSize="18sp"/>
     </RelativeLayout>
+    </FrameLayout>
 
 </LinearLayout>

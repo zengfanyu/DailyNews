@@ -30,7 +30,7 @@ public class Latest implements Serializable {
         this.date = date;
     }
 
-    public List<TopStoriesEntity> getTop_stories() {
+    public List<TopStoriesEntity> getTopStories() {
         return top_stories;
     }
 
