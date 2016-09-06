@@ -1,6 +1,5 @@
-##CopycatZhihu##
+##DailyNews##
 
-**Copycat,翻译得接地气一点,意思是:山寨;山寨版知乎**
 
 
 > **Screen**
