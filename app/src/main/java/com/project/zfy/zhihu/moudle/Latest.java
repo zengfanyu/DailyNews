@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * $desc
+ * 最新消息的moudle
  * Created by zfy on 2016/8/2.
  */
 public class Latest implements Serializable {

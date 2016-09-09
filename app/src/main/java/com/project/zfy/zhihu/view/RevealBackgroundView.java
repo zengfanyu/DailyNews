@@ -15,7 +15,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
 /**
- * Created by Miroslaw Stanek on 18.01.15.
+ * Created by zfy
  */
 public class RevealBackgroundView extends View {
     public static final int STATE_NOT_STARTED = 0;
@@ -35,43 +35,41 @@ public class RevealBackgroundView extends View {
     private int startLocationY;
 
 
-    private OnStateChangeListener onStateChangeListener;
+    private OnStateChangeListener mOnStateChangeListener;
 
     public RevealBackgroundView(Context context) {
         super(context);
-        init();
+        initPaint();
     }
 
     public RevealBackgroundView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        initPaint();
     }
 
     public RevealBackgroundView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        initPaint();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public RevealBackgroundView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        initPaint();
     }
 
-    private void init() {
+    private void initPaint() {
         fillPaint = new Paint();
         fillPaint.setStyle(Paint.Style.FILL);
         fillPaint.setColor(Color.WHITE);
     }
 
-    public void setFillPaintColor(int color) {
-        fillPaint.setColor(color);
-    }
 
     public void startFromLocation(int[] tapLocationOnScreen) {
         changeState(STATE_FILL_STARTED);
         startLocationX = tapLocationOnScreen[0];
         startLocationY = tapLocationOnScreen[1];
+        //对此View 的curentRadius属性做变化,从0到此View的宽加高的和,在600ms内完成,并且设置一个加速度插补器
         revealAnimator = ObjectAnimator.ofInt(this, "currentRadius", 0, getWidth() + getHeight()).setDuration(FILL_TIME);
         revealAnimator.setInterpolator(INTERPOLATOR);
         revealAnimator.addListener(new AnimatorListenerAdapter() {
@@ -103,18 +101,18 @@ public class RevealBackgroundView extends View {
         }
 
         this.state = state;
-        if (onStateChangeListener != null) {
-            onStateChangeListener.onStateChange(state);
+        if (mOnStateChangeListener != null) {
+            mOnStateChangeListener.onStateChange(state);
         }
-    }
-
-    public void setOnStateChangeListener(OnStateChangeListener onStateChangeListener) {
-        this.onStateChangeListener = onStateChangeListener;
     }
 
     public void setCurrentRadius(int radius) {
         this.currentRadius = radius;
         invalidate();
+    }
+
+    public void setOnStateChangeListener(OnStateChangeListener onStateChangeListener) {
+        this.mOnStateChangeListener = onStateChangeListener;
     }
 
     public static interface OnStateChangeListener {

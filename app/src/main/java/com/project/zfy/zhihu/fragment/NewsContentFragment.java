@@ -116,8 +116,6 @@ public class NewsContentFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
         coordinatorLayout.setVisibility(View.INVISIBLE);
         fab_float.setVisibility(View.INVISIBLE);
-
-
     }
 
     private void onBackPressed() {

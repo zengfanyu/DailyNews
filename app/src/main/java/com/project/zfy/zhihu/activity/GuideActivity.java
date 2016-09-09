@@ -2,10 +2,12 @@ package com.project.zfy.zhihu.activity;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -32,26 +34,39 @@ public class GuideActivity extends BaseActivity {
     private ArrayList<ImageView> mViewArrayList;
     private Button bt_start;
     private LinearLayout ll_container;
-    private ImageView iv_red_point;
+    private ImageView iv_blue_point;
     private int mPointDis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
-
+        initBar();
         initView();
-
         initData();
-
         mVp_pager.setAdapter(new MyPagerAdapter());
+    }
+
+    private void initBar() {
+        //设置透明状态栏的效果
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
     }
 
     private void initView() {
 
         ll_container = (LinearLayout) findViewById(R.id.ll_container);
 
-        iv_red_point = (ImageView) findViewById(R.id.iv_red_point);
+        iv_blue_point = (ImageView) findViewById(R.id.iv_red_point);
 
         mVp_pager = (ViewPagerWithAnim) findViewById(R.id.vp_pager);
 
@@ -59,22 +74,17 @@ public class GuideActivity extends BaseActivity {
         mVp_pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                //小红点的最新位置(leftMargin)==移动的百分比(positionOffset)*两圆点之间的距离(mPointDis)+当前位置
-
+                //小蓝点的最新位置(leftMargin)==移动的百分比(positionOffset)*两圆点之间的距离(mPointDis)+当前位置
                 int leftMargin = (int) (mPointDis * positionOffset + position * mPointDis);
                 //拿到小红点的布局参数
-//                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_red_point.getLayoutParams();
-
+//                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) iv_blue_point.getLayoutParams();
                 RelativeLayout.LayoutParams params =
                         new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT);
-
                 //改变最新的位置
                 params.leftMargin = leftMargin;
                 //重新设置给小红点
-                iv_red_point.setLayoutParams(params);
-
-
+                iv_blue_point.setLayoutParams(params);
             }
 
             @Override //当某个页面被选中的时候,回调方法
@@ -85,8 +95,6 @@ public class GuideActivity extends BaseActivity {
                 } else {
                     bt_start.setVisibility(View.GONE);
                 }
-
-
             }
 
             @Override
@@ -95,17 +103,14 @@ public class GuideActivity extends BaseActivity {
             }
         });
 
-
         //监听layout方法结束,位置确定好了之后,再计算值
-        iv_red_point.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        iv_blue_point.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onGlobalLayout() {
                 //layout方法结束后的回调
-
                 //移除监听,避免重复回调
-                iv_red_point.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
+                iv_blue_point.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 /*计算两个圆点的距离 第二个圆点的left值-第一个圆点的left值
                  * measures->layout(确定位置)->draw Acivity的onCreate方法结束后才会走这个流程
                  * */
@@ -121,26 +126,19 @@ public class GuideActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 startActivity();
-
                 SharedPreferenceUtils.putBoolean(GuideActivity.this, Constant.IS_FIRST_ENTER, false);
             }
         });
-
-
     }
 
     private void initData() {
-
         mImgIDs = new int[]{R.drawable.guide_01, R.drawable.guide_02, R.drawable.guide_03};
-
         mViewArrayList = new ArrayList<>();
-
         for (int i = 0; i < mImgIDs.length; i++) {
             ImageView imageView = new ImageView(GuideActivity.this);
             imageView.setImageResource(mImgIDs[i]);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             mViewArrayList.add(imageView);
-
             //初始化底部小灰点
             ImageView point_gray = new ImageView(GuideActivity.this);
             point_gray.setImageResource(R.drawable.shape_point_gray);
@@ -148,7 +146,6 @@ public class GuideActivity extends BaseActivity {
             LinearLayout.LayoutParams params =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
-
             if (i > 0) {
                 //从第二个小灰点开始设置margin
                 params.leftMargin = 10;
@@ -157,8 +154,6 @@ public class GuideActivity extends BaseActivity {
             point_gray.setLayoutParams(params);
             //将小灰点添加到容器中
             ll_container.addView(point_gray);
-
-
         }
     }
 
@@ -176,7 +171,9 @@ public class GuideActivity extends BaseActivity {
         finish();
     }
 
-
+    /*
+    * ViewPager的Adapter
+    * */
     private class MyPagerAdapter extends PagerAdapter {
         @Override
         public int getCount() {
@@ -191,8 +188,9 @@ public class GuideActivity extends BaseActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
-
+            //给Map存值
             mVp_pager.setViewForPosition(mViewArrayList.get(position), position);
+
 
             container.addView(mViewArrayList.get(position));
 
@@ -201,12 +199,9 @@ public class GuideActivity extends BaseActivity {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-
             container.removeView(mViewArrayList.get(position));
+            //将值从hashmap中移除
             mVp_pager.removeViewForPosition(position);
-
         }
-
-
     }
 }

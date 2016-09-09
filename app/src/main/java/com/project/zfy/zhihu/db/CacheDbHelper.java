@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.project.zfy.zhihu.global.Constant;
+
 /**
  * 数据库的帮助类
  *
@@ -13,7 +15,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class CacheDbHelper extends SQLiteOpenHelper {
 
     public CacheDbHelper(Context context, int version) {
-        super(context, "cache.db", null, version);
+        super(context, Constant.NEWS_ITEM_DATABASE_NAME, null, version);
     }
 
 

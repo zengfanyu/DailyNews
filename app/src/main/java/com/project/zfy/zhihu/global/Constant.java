@@ -65,46 +65,66 @@ public class Constant {
      * @created at 2016/8/3 11:12
      */
     public static final String DEFORE = "news/before/";
-    
+
     /**
-    *主题日报内容
-    *@author zfy
-    *@created at 2016/8/4 9:05
-    */
+     * 主题日报内容
+     *
+     * @author zfy
+     * @created at 2016/8/4 9:05
+     */
     public static final String THEMENEWS = "theme/";
     /**
-    *数据库使用的一个定值
-    *@author zfy
-    *@created at 2016/8/4 9:06
-    */
+     * 数据库使用的一个定值
+     *
+     * @author zfy
+     * @created at 2016/8/4 9:06
+     */
     public static final int BASE_COLUMN = 100000000;
 
 
     /**
-    *
-    *@author zfy
-    *@created at 2016/8/5 8:36
-    */
+     * @author zfy
+     * @created at 2016/8/5 8:36
+     */
     public static final String START_LOCATION = "start_location";
 
     /**
-    *最新新闻详情页面的url 后面拼接上ｉｄ
-    *@author zfy
-    *@created at 2016/8/5 10:16
-    */
+     * 最新新闻详情页面的url 后面拼接上ｉｄ
+     *
+     * @author zfy
+     * @created at 2016/8/5 10:16
+     */
     public static final String CONTENT = "news/";
 
     /**
-    *已经点击过的新闻的id
-    *@author zfy
-    *@created at 2016/8/7 10:20
-    */
+     * 已经点击过的新闻的id
+     *
+     * @author zfy
+     * @created at 2016/8/7 10:20
+     */
     public static final String READ_IDS = "read_ids";
 
     /**
-    *标记是否时第一次进入APP
-    *@author zfy
-    *@created at 2016/8/13 18:12
-    */
+     * 标记是否时第一次进入APP
+     *
+     * @author zfy
+     * @created at 2016/8/13 18:12
+     */
     public static final String IS_FIRST_ENTER = "is_first_enter";
+
+    /**
+     * 缓存新闻列表的数据库的名字
+     *
+     * @author zfy
+     * @created at 2016/9/3 10:15
+     */
+    public static final String NEWS_ITEM_DATABASE_NAME = "cache.db";
+
+    /**
+     * 缓存WebView具体新闻的数据库的名字
+     *
+     * @author zfy
+     * @created at 2016/9/4 11:31
+     */
+    public static final String NEWS_CONTENT_DATABASE_NAME = "webCache.db";
 }

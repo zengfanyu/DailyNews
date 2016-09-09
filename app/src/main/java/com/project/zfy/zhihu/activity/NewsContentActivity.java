@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -26,7 +25,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * 某一主题日报的具体某一条item的activity
  * Created by zfy on 2016/8/6.
  */
-public class NewsContentActivity extends AppCompatActivity implements RevealBackgroundView.OnStateChangeListener {
+public class NewsContentActivity extends BaseActivity implements RevealBackgroundView.OnStateChangeListener {
 
     private int[] mStartingLocation;
 
@@ -43,6 +42,13 @@ public class NewsContentActivity extends AppCompatActivity implements RevealBack
 
         EventBus.getDefault().register(this);
 
+        initView();
+
+        initAnimation(savedInstanceState);
+
+    }
+
+    private void initView() {
         mBackgroundView = (RevealBackgroundView) findViewById(R.id.rbv_view);
 
 //        mStartingLocation = getIntent().getIntArrayExtra(Constant.START_LOCATION);
@@ -56,11 +62,7 @@ public class NewsContentActivity extends AppCompatActivity implements RevealBack
         if (mNewsContentFragment == null) {
             mNewsContentFragment = NewsContentFragment.newInstance(mEntity);
             fm.beginTransaction().add(R.id.id_fragment_container, mNewsContentFragment).commit();
-
         }
-
-        initAnimation(savedInstanceState);
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN , sticky = true)

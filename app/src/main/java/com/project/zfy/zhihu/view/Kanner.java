@@ -28,7 +28,7 @@ public class Kanner extends FrameLayout implements OnClickListener {
     private List<Latest.TopStoriesEntity> topStoriesEntities;
     private ImageLoader mImageLoader;
     private DisplayImageOptions options;
-    private List<View> views;
+    private List<View> mVPContentViewList;
     private Context context;
     private ViewPagerWithAnim vp;
     private boolean isAutoPlay;
@@ -37,9 +37,6 @@ public class Kanner extends FrameLayout implements OnClickListener {
     private Handler handler = new Handler();
     private OnItemClickListener mItemClickListener;
 
-    /*
-    * 构造方法
-    * */
     public Kanner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mImageLoader = ImageLoader.getInstance();
@@ -49,11 +46,9 @@ public class Kanner extends FrameLayout implements OnClickListener {
                 .build();
         this.context = context;
         this.topStoriesEntities = new ArrayList<>();
-
-        views = new ArrayList<>();
+        mVPContentViewList = new ArrayList<>();
         iv_dots = new ArrayList<>();
     }
-
 
     /*
     * 最终回调的都是三个参数的构造方法
@@ -61,6 +56,7 @@ public class Kanner extends FrameLayout implements OnClickListener {
     public Kanner(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
+
     /*
     * 最终回调的都是三个参数的构造方法
     * */
@@ -74,13 +70,12 @@ public class Kanner extends FrameLayout implements OnClickListener {
     }
 
     private void reset() {
-        views.clear();
+        mVPContentViewList.clear();
         initUI();
     }
 
     private void initUI() {
-        View view = LayoutInflater.from(context).inflate(
-                R.layout.kanner_layout, this, true);
+        View view = LayoutInflater.from(context).inflate(R.layout.kanner_layout, this, true);
         vp = (ViewPagerWithAnim) view.findViewById(R.id.vp);
         LinearLayout ll_dot = (LinearLayout) view.findViewById(R.id.ll_dot);
 //        ll_dot.removeAllViews();
@@ -96,6 +91,7 @@ public class Kanner extends FrameLayout implements OnClickListener {
                     LinearLayout.LayoutParams.WRAP_CONTENT);
             params.leftMargin = 5;
             params.rightMargin = 5;
+            iv_dot.setScaleType(ScaleType.CENTER_CROP);
             ll_dot.addView(iv_dot, params);
             iv_dots.add(iv_dot);
         }
@@ -113,7 +109,6 @@ public class Kanner extends FrameLayout implements OnClickListener {
             ImageView iv = (ImageView) pagerContentView.findViewById(R.id.iv_title);
             TextView tv_title = (TextView) pagerContentView.findViewById(R.id.tv_title);
             iv.setScaleType(ScaleType.CENTER_CROP);
-//            iv.setBackgroundResource(R.drawable.loading1);
             if (i == 0) {
                 mImageLoader.displayImage(topStoriesEntities.get(len - 1).getImage(), iv, options);
                 tv_title.setText(topStoriesEntities.get(len - 1).getTitle());
@@ -126,14 +121,56 @@ public class Kanner extends FrameLayout implements OnClickListener {
             }
             //设置点击事件的监听
             pagerContentView.setOnClickListener(this);
-            views.add(pagerContentView);
+            mVPContentViewList.add(pagerContentView);
         }
         vp.setAdapter(new MyPagerAdapter());
         //设置ViewPage可以被点击
         vp.setFocusable(true);
-        vp.setCurrentItem(1);
         currentItem = 1;
-        vp.addOnPageChangeListener(new MyOnPageChangeListener());
+        vp.setOnPageChangeListener(new OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < iv_dots.size(); i++) {
+                    if (i == position - 1) {
+                        iv_dots.get(i).setImageResource(R.drawable.dot_focus);
+                    } else {
+                        iv_dots.get(i).setImageResource(R.drawable.dot_blur);
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                switch (state) {
+                    // 1-->当前VP正在被用户拖动
+                    case 1:
+                        isAutoPlay = false;
+                        break;
+                    //2-->自动滑动的过程中
+                    case 2:
+                        isAutoPlay = true;
+                        break;
+                    //静止状态
+                    case 0:
+                        if (vp.getCurrentItem() == 0) {
+                            vp.setCurrentItem(topStoriesEntities.size(), false);
+                        } else if (vp.getCurrentItem() == topStoriesEntities.size() + 1) {
+                            vp.setCurrentItem(1, false);
+                        }
+                        currentItem = vp.getCurrentItem();
+                        isAutoPlay = true;
+                        break;
+                }
+
+            }
+        });
+        //手动初始状态的位置,不然最开始时候,indicator是不会出来的
+        vp.setCurrentItem(1);
         startPlay();
     }
 
@@ -148,9 +185,11 @@ public class Kanner extends FrameLayout implements OnClickListener {
         @Override
         public void run() {
             if (isAutoPlay) {
+                //current每次+1
                 currentItem = currentItem % (topStoriesEntities.size() + 1) + 1;
+//                Logger.d("currentItem-->"+currentItem);
                 if (currentItem == 1) {
-                    vp.setCurrentItem(currentItem, false);
+                    vp.setCurrentItem(currentItem, true);
                     handler.post(task);
                 } else {
                     vp.setCurrentItem(currentItem);
@@ -169,7 +208,7 @@ public class Kanner extends FrameLayout implements OnClickListener {
 
         @Override
         public int getCount() {
-            return views.size();
+            return mVPContentViewList.size();
         }
 
         @Override
@@ -179,8 +218,8 @@ public class Kanner extends FrameLayout implements OnClickListener {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(views.get(position));
-            return views.get(position);
+            container.addView(mVPContentViewList.get(position));
+            return mVPContentViewList.get(position);
         }
 
         @Override
@@ -189,54 +228,6 @@ public class Kanner extends FrameLayout implements OnClickListener {
         }
 
     }
-
-    /*
-    * 监听ViewPager的滑动事件
-    * */
-    class MyOnPageChangeListener implements OnPageChangeListener {
-
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
-            switch (arg0) {
-                // 1-->当前VP正在被用户拖动
-                case 1:
-                    isAutoPlay = false;
-                    break;
-                //2-->自动滑动的过程中
-                case 2:
-                    isAutoPlay = true;
-                    break;
-                //静止状态
-                case 0:
-                    if (vp.getCurrentItem() == 0) {
-                        vp.setCurrentItem(topStoriesEntities.size(), false);
-                    } else if (vp.getCurrentItem() == topStoriesEntities.size() + 1) {
-                        vp.setCurrentItem(1, false);
-                    }
-                    currentItem = vp.getCurrentItem();
-                    isAutoPlay = true;
-                    break;
-            }
-        }
-
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-        }
-
-        @Override
-        public void onPageSelected(int arg0) {
-            for (int i = 0; i < iv_dots.size(); i++) {
-                if (i == arg0 - 1) {
-                    iv_dots.get(i).setImageResource(R.drawable.dot_focus);
-                } else {
-                    iv_dots.get(i).setImageResource(R.drawable.dot_blur);
-                }
-            }
-
-        }
-
-    }
-
 
     public void setOnItemClickListener(OnItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;

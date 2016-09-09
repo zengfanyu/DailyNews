@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,8 @@ import com.project.zfy.zhihu.global.Constant;
 import com.project.zfy.zhihu.moudle.Content;
 import com.project.zfy.zhihu.moudle.StoriesEntity;
 import com.project.zfy.zhihu.utils.HttpUtils;
+import com.project.zfy.zhihu.utils.IOUtils;
+import com.project.zfy.zhihu.utils.ToastUtils;
 import com.project.zfy.zhihu.utils.UIUtils;
 import com.project.zfy.zhihu.view.RoundImageView;
 
@@ -43,9 +46,9 @@ public class LatestContentFragment extends BaseFragment {
     public StoriesEntity mEntity;
     public WebView mWebView;
     public FloatingActionButton fab_float;
-
+    public CoordinatorLayout mCoordinatorLayout;
     public AppBarLayout app_bar_layout;
-    private RoundImageView iv_header;
+    public RoundImageView iv_header;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
 
@@ -60,7 +63,6 @@ public class LatestContentFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle bundle = getArguments();
         if (bundle != null) {
             mEntity = (StoriesEntity) bundle.getSerializable("entity");
@@ -71,24 +73,17 @@ public class LatestContentFragment extends BaseFragment {
     @Override
     public View initView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
         View view = View.inflate(getActivity(), R.layout.fragment_latest_content, null);
-
-
         mDbHelper = new WebCacheDbHelper(getActivity(), 1);
-
         fab_float = (FloatingActionButton) view.findViewById(R.id.fab_float);
-        fab_float.setVisibility(View.INVISIBLE);
+        mCoordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.coordinatorLayout);
 
         fab_float.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showShare();
-//                ToastUtils.ToastUtils(getActivity(), "Share clicked");
-
             }
         });
-
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.tb_bar);
-
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -100,8 +95,6 @@ public class LatestContentFragment extends BaseFragment {
                 onBackPressed();
             }
         });
-
-
         mWebView = (WebView) view.findViewById(R.id.wv_view);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
@@ -111,17 +104,14 @@ public class LatestContentFragment extends BaseFragment {
         mWebView.getSettings().setDatabaseEnabled(true);
         // 开启Application Cache功能
         mWebView.getSettings().setAppCacheEnabled(true);
-
-
         app_bar_layout = (AppBarLayout) view.findViewById(R.id.app_bar_layout);
         iv_header = (RoundImageView) view.findViewById(R.id.iv_header);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar_layout);
-
+        fab_float.setVisibility(View.INVISIBLE);
         String flag = getActivity().getIntent().getStringExtra("flag");
 
         if (flag.equals("kanner")) {
             app_bar_layout.setVisibility(View.INVISIBLE);
-
 
         }
 
@@ -140,7 +130,11 @@ public class LatestContentFragment extends BaseFragment {
     private void onBackPressed() {
         getActivity().finish();
         FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().remove(this).commit();
+        fm
+                .beginTransaction()
+                .setCustomAnimations(R.anim.fab_in, R.anim.abc_fade_out)
+                .remove(this)
+                .commit();
     }
 
     @Override
@@ -150,7 +144,15 @@ public class LatestContentFragment extends BaseFragment {
         mCollapsingToolbarLayout.setContentScrimColor(UIUtils.getColor(R.color.light_toolbar));
         mCollapsingToolbarLayout.setStatusBarScrimColor(UIUtils.getColor(R.color.light_toolbar));
 
-        if (HttpUtils.isNetworkConnected(getActivity())) {
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from Cache where newsId = " + mEntity.getId(), null);
+        if (cursor.moveToFirst()) {
+            String json = cursor.getString(cursor.getColumnIndex("json"));
+            IOUtils.close(cursor);
+            IOUtils.close(db);
+            parseJsonData(json);
+        } else if (HttpUtils.isNetworkConnected(getActivity())) {
             HttpUtils.get(Constant.CONTENT + mEntity.getId(), new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -163,24 +165,47 @@ public class LatestContentFragment extends BaseFragment {
                     SQLiteDatabase db = mDbHelper.getWritableDatabase();
                     responseString = responseString.replaceAll("'", "''");
                     db.execSQL("replace into Cache(newsId,json) values(" + mEntity.getId() + ",'" + responseString + "')");
-                    db.close();
+                    IOUtils.close(db);
                     parseJsonData(responseString);
                 }
             });
 
         } else {
-
-            //没有网络，则从数据库中拿数据
-            SQLiteDatabase db = mDbHelper.getReadableDatabase();
-            Cursor cursor = db.rawQuery("select * from Cache where newsId = " + mEntity.getId(), null);
-            if (cursor.moveToFirst()) {
-                String json = cursor.getString(cursor.getColumnIndex("json"));
-                parseJsonData(json);
-            }
-            cursor.close();
-            db.close();
-
+            ToastUtils.ToastUtils(mActivity, "网络不给力呀~");
         }
+
+
+//        if (HttpUtils.isNetworkConnected(getActivity())) {
+//            HttpUtils.get(Constant.CONTENT + mEntity.getId(), new TextHttpResponseHandler() {
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//
+//                }
+//
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//                    //请求数据成功，缓存到数据库
+//                    SQLiteDatabase db = mDbHelper.getWritableDatabase();
+//                    responseString = responseString.replaceAll("'", "''");
+//                    db.execSQL("replace into Cache(newsId,json) values(" + mEntity.getId() + ",'" + responseString + "')");
+//                    IOUtils.close(db);
+//                    parseJsonData(responseString);
+//                }
+//            });
+//
+//        } else {
+//
+//            //没有网络，则从数据库中拿数据
+//            SQLiteDatabase db = mDbHelper.getReadableDatabase();
+//            Cursor cursor = db.rawQuery("select * from Cache where newsId = " + mEntity.getId(), null);
+//            if (cursor.moveToFirst()) {
+//                String json = cursor.getString(cursor.getColumnIndex("json"));
+//                parseJsonData(json);
+//            }
+//            IOUtils.close(cursor);
+//            IOUtils.close(db);
+//
+//        }
 
     }
 

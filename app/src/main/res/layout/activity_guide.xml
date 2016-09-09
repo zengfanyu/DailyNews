@@ -52,7 +52,7 @@
             android:id="@+id/iv_red_point"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/shape_point_red"/>
+            android:src="@drawable/shape_point_blue"/>
 
     </RelativeLayout>
 

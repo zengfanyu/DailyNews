@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by wwjun.wang on 2015/8/14.
+ * Created by zfy
  */
 public class StoriesEntity implements Serializable {
 

@@ -35,41 +35,36 @@ public class ViewPagerWithAnim extends ViewPager {
     }
 
     /**
-    *将View机器对应的pisiton设置进HashMap
-    *@author zfy
-    *@created at 2016/8/13 17:14
-    */
+     * 将View对应的pisiton设置进HashMap
+     *
+     * @author zfy
+     * @created at 2016/8/13 17:14
+     */
     public void setViewForPosition(View view, int position) {
         mChildren.put(position, view);
-
     }
 
-
     /**
-    *将HashMap在position位置处的view移除掉
-    *@author zfy
-    *@created at 2016/8/13 17:15
-    */
+     * 将HashMap在position位置处的view移除掉
+     *
+     * @author zfy
+     * @created at 2016/8/13 17:15
+     */
     public void removeViewForPosition(int position) {
         mChildren.remove(position);
     }
 
-
     @Override
     protected void onPageScrolled(int position, float offset, int offsetPixels) {
-
-//        Log.d("onPageScrolled--->", "position:" + position + ",offset:" + offset + ",offsetPixels:" + offsetPixels);
-
-
         //通过属性动画,来达到动画的效果
+//        Logger.d("currentItem:" + getCurrentItem() + ",childAt:" + getChildAt(position)+",position"+position);
+
+
         mLeftView = mChildren.get(position);
         mRightView = mChildren.get(position + 1);
-
         animStack(mLeftView, mRightView, offset, offsetPixels);
-
         super.onPageScrolled(position, offset, offsetPixels);
     }
-
 
     /**
      * 给ViewPager的View设置的动画
@@ -82,23 +77,16 @@ public class ViewPagerWithAnim extends ViewPager {
             mScale = (1 - MIN_SCALE) * offset + MIN_SCALE;
             mTrans = -getWidth() - getPageMargin() + offsetPixels;
 
+
             rightView.setScaleX(mScale);
             rightView.setScaleY(mScale);
-
             rightView.setTranslationX(mTrans);
             rightView.setTranslationY(0);
-
-
         }
-
         if (leftView != null) {
             mAlpha = 1 - offset;
-
             leftView.bringToFront();
-
             leftView.setAlpha(mAlpha);
         }
     }
-
-
 }

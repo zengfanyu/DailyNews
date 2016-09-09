@@ -14,10 +14,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.ImageView;
 
+import com.orhanobut.logger.Logger;
 import com.project.zfy.zhihu.R;
 
 
@@ -110,6 +110,24 @@ public class RoundImageView extends ImageView {
 
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        Logger.d("onDraw RoundImageView");
+
+        if (getDrawable() == null) {
+            return;
+        }
+
+        setUpShader();
+
+        if (type == TYPE_ROUND) {
+            canvas.drawRoundRect(mRoundRect, mBorderRadius, mBorderRadius,mBitmapPaint);
+        } else {
+            canvas.drawCircle(mRadius, mRadius, mRadius, mBitmapPaint);
+            // drawSomeThing(canvas);
+        }
+    }
+
     /**
      * 初始化BitmapShader
      */
@@ -134,9 +152,7 @@ public class RoundImageView extends ImageView {
             scale = mWidth * 1.0f / bitmapMin;
 
         } else if (type == TYPE_ROUND) {
-            Log.d("TAG",
-                    "b'w = " + bitmap.getWidth() + " , " + "b'h = "
-                            + bitmap.getHeight());
+
             if (!(bitmap.getWidth() == getWidth() && bitmap.getHeight() == getHeight())) {
                 // 如果图片的宽或者高与view的宽高不匹配，计算出需要缩放的比例；
                 // 缩放后的图片的宽高，一定要大于我们view的宽高；所以我们这里取大值；
@@ -154,36 +170,19 @@ public class RoundImageView extends ImageView {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        Log.d("TAG", "onDraw");
-        if (getDrawable() == null) {
-            return;
-        }
-        setUpShader();
-
-        if (type == TYPE_ROUND) {
-            canvas.drawRoundRect(mRoundRect, mBorderRadius, mBorderRadius,
-                    mBitmapPaint);
-        } else {
-            canvas.drawCircle(mRadius, mRadius, mRadius, mBitmapPaint);
-            // drawSomeThing(canvas);
-        }
-    }
-
-    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-
         // 圆角图片的范围
-        if (type == TYPE_ROUND)
+        if (type == TYPE_ROUND) {
             mRoundRect = new RectF(0, 0, w, h);
+        }
     }
 
     /**
      * drawable转bitmap
      *
      * @param drawable
-     * @return
+     * @return bitmap
      */
     private Bitmap drawableToBitamp(Drawable drawable) {
         if (drawable instanceof BitmapDrawable) {
@@ -199,6 +198,10 @@ public class RoundImageView extends ImageView {
         return bitmap;
     }
 
+
+    /*
+    * 状态的存储与恢复
+    * */
     private static final String STATE_INSTANCE = "state_instance";
     private static final String STATE_TYPE = "state_type";
     private static final String STATE_BORDER_RADIUS = "state_border_radius";

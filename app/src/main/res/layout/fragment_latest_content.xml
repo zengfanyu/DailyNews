@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<!--http://blog.csdn.net/xyz_lmn/article/details/48055919　不懂就看着里-->
+<!--http://blog.csdn.net/xyz_lmn/article/details/48055919
+    http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0717/3196.html　不懂就看着里-->
 
 <android.support.design.widget.CoordinatorLayout
     android:id="@+id/coordinatorLayout"
@@ -27,30 +28,6 @@
 
 
 
-
-
-        <!--
-            app:contentScrim　
-            ＴｏｏｌＢａｒ被折叠到顶部固定时，的背景
-        -->
-
-        <!--scroll: 所有想滚动出屏幕的view都需要设置这个flag，
-                    没有设置这个flag的view将被固定在屏幕顶部。
-
-            enterAlways: 设置这个flag时，向下的滚动都会导致该view变为可见，启用快速“返回模式”。
-
-            enterAlwaysCollapsed: 当你的视图已经设置minHeight属性又使用此标志时，
-            你的视图只能已最小高度进入，只有当滚动视图到达顶部时才扩大到完整高度。
-
-            exitUntilCollapsed: 滚动退出屏幕，最后折叠在顶端。-->
-
-        <!--
-        使用CollapsingToolbarLayout实现折叠效果，需要注意3点
-                1. AppBarLayout的高度固定
-                2. CollapsingToolbarLayout的子视图设置layout_collapseMode属性
-                3. 关联悬浮视图设置app:layout_anchor，app:layout_anchorGravity属性
-        -->
-
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar_layout"
             android:layout_width="match_parent"
@@ -63,16 +40,10 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
 
-            <!--
-                app:layout_collapseParallaxMultiplier
-                子视图的视差［０．０，１．０］，值越大，视差越大
-
-            -->
-
             <com.project.zfy.zhihu.view.RoundImageView
                 android:id="@+id/iv_header"
                 app:type="round"
-                app:borderRadius="20dp"
+                app:borderRadius="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
@@ -80,17 +51,12 @@
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.7"/>
 
-            <!--app:layout_collapseMode　子视图的折叠模式
-                ｐｉｎ：固定模式，在折叠的时候最后固定在顶端
-                parallax：视差模式．在折叠的时候会有一个视差折叠效果
-            -->
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tb_bar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"/>
-
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -131,10 +97,6 @@
         app:elevation="6dp"
         app:layout_behavior="com.project.zfy.zhihu.view.ScrollAwareFABBehaviorDefault"
         app:pressedTranslationZ="12dp"/>
-
-
-
-
 
 </android.support.design.widget.CoordinatorLayout>
 

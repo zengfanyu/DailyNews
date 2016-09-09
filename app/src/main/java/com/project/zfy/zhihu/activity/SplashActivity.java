@@ -2,7 +2,11 @@ package com.project.zfy.zhihu.activity;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
@@ -26,8 +30,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import cn.sharesdk.framework.ShareSDK;
-
 public class SplashActivity extends BaseActivity {
 
     private ImageView iv_start;
@@ -36,18 +38,26 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //在入口activity出初始化SharedSDK
-        ShareSDK.initSDK(this, "15d2bf5fa8b3f");
-
         setContentView(R.layout.activity_splash);
-
-
+        initBar();
         initView();
         initAnimation();
-
     }
 
+    private void initBar() {
+        //设置透明状态栏的效果
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
 
     /**
      * 初始化布局的方法
@@ -65,7 +75,6 @@ public class SplashActivity extends BaseActivity {
             iv_start.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
         } else {
             iv_start.setBackgroundResource(R.mipmap.start);
-
         }
     }
 
@@ -99,7 +108,6 @@ public class SplashActivity extends BaseActivity {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                             try {
-
                                 //解析Json数据,注意转换为String类型
                                 JSONObject jsonObject = new JSONObject(new String(responseBody));
                                 String imgUrl = jsonObject.getString("img");
@@ -168,11 +176,10 @@ public class SplashActivity extends BaseActivity {
     public void saveImage(File file, byte[] bytes) {
         FileOutputStream outputStream = null;
         try {
-
+            //如果文件存在的话,首先将文件删除
             if (file.exists()) {
                 file.delete();
             }
-
             outputStream = new FileOutputStream(file);
             outputStream.write(bytes);
             outputStream.flush();
@@ -188,13 +195,11 @@ public class SplashActivity extends BaseActivity {
 
     /**
      * 跳转到下一个Activity的方法
-     *
+     *@param isFirstEnter  是否是第一次进入APP,决定接下来跳转的具体页面
      * @author zfy
      * @created at 2016/8/2 9:24
      */
     public void startActivity(boolean isFirstEnter) {
-
-
         Intent intent;
         if (isFirstEnter) {
             intent = new Intent(SplashActivity.this, GuideActivity.class);
