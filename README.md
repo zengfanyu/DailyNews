@@ -1,6 +1,5 @@
-##CopycatZhihu##
+##DailyNews##
 
-**Copycat,翻译得接地气一点,意思是:山寨;山寨版知乎**
 
 
 > **Screen**
@@ -25,6 +24,21 @@
 > **Animaiton**
 
 本项目中Activity跳转动画来自[InstaMaterial](https://github.com/frogermcs/InstaMaterial).
+
+
+> **dependencies**
+
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
+    compile 'com.loopj.android:android-async-http:1.4.8'
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.jakewharton:butterknife:6.1.0'
+    compile files('libs/MobCommons-2016.0707.1708.jar')
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.orhanobut:logger:1.15'
+    compile 'com.android.support:cardview-v7:22.0.0'
+
 
 > **Thanks**
 
